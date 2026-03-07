@@ -6,44 +6,22 @@ import { useState } from "react";
 function CuponCard({ oferta }) {
 
     const navigate = useNavigate();
-    const [comprando, setComprando] = useState(false);
+    const { user } = supabase.auth.useUser();
 
-    const handleComprar = async () => {
-        setComprando(true);
-
-        // Obtener sesión actual
-        const { data: { session } } = await supabase.auth.getSession();
-
-        if (!session) {
+    const redirigir = () => {
+        if (user) {
+            navigate('/pago-cupon', { state: { id_cupon: oferta.id_cupones, precio: oferta.precio_oferta } });
+        } else {
             navigate('/login');
-            return;
         }
-
-        const { error } = await supabase
-            .from('CuponesComprados')
-            .insert({
-                id_cupones: oferta.id_cupones,
-                id: session.user.id,
-                estado: 'Vigente'
-            });
-
-        if (error) {
-            console.error(error);
-            setComprando(false);
-            return;
-        }
-
-        // Compra exitosa
-        setComprando(false);
     };
-
     return (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg transition-all">
 
             <div className="w-full h-48 bg-slate-100 flex items-center justify-center overflow-hidden">
                 {oferta.imagen ? (
                     <img
-                        src={`/src/assets/img-cupones/${oferta.imagen}`}
+                        src={`/img/${oferta.imagen}`}
                         alt={oferta.titulo}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -101,7 +79,7 @@ function CuponCard({ oferta }) {
 
             <div className="px-5 pb-5">
                 <button
-                    onClick={handleComprar}
+                    onClick={redirigir}
                     disabled={comprando || oferta.cantidad_cupon === 0}
                     className="w-full py-3.5 bg-oxford-navy text-white font-bold rounded-lg hover:bg-[#003366] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >

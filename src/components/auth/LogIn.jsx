@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom'
 export default function LogIn() {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState(''); 
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -20,7 +20,7 @@ export default function LogIn() {
             [e.target.name]: e.target.value,
         });
     }
- 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -39,6 +39,38 @@ export default function LogIn() {
 
         setLoading(false);
         navigate('/');
+    };
+
+    const handleComprar = async () => {
+        setComprando(true);
+
+        const { data: { session } } = await supabase.auth.getSession();
+        const userId = session.user.id;
+
+        if (!session) {
+            navigate('/login');
+            return;
+        }
+
+        try {
+            await registrarCompra(oferta, userId);
+        } catch (error) {
+            console.error(error);
+        }
+
+        setComprando(false);
+    };
+
+    const registrarCompra = async (cupon, userId) => {
+        const { error } = await supabase
+            .from('CuponesComprados')
+            .insert({
+                id_cupones: cupon.id_cupones,
+                id: userId,
+                estado: 'Vigente'
+            });
+
+        if (error) throw error;
     };
 
     return (
@@ -77,7 +109,7 @@ export default function LogIn() {
                                 placeholder="correo@email.com"
                                 required
                                 name="email"
-                                value = {formData.email}
+                                value={formData.email}
                                 onChange={handleChange}
                                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                             />
@@ -93,7 +125,7 @@ export default function LogIn() {
                                     type={showPassword ? "text" : "password"}
                                     required
                                     name="password"
-                                    value = {formData.password}
+                                    value={formData.password}
                                     onChange={handleChange}
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-12 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />

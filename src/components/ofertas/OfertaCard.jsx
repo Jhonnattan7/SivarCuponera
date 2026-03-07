@@ -20,7 +20,7 @@ export default function OfertaCard({ oferta }) {
         <div className="w-full sm:w-32 sm:h-32 h-48 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
           {oferta.imagen ? (
             <img
-              src={`/src/assets/img-cupones/${oferta.imagen}`}
+              src={`/img/${oferta.imagen}`}
               alt={oferta.titulo}
               className="w-full h-full object-cover"
               onError={(e) => {

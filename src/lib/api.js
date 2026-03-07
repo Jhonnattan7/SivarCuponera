@@ -72,7 +72,7 @@ export const obtenerCuponesPorUsuario = async (userId) => {
 export const comprarCupon = async (id_cupon) => {
   try {
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     if (!user) {
       return { success: false, error: 'Usuario no autenticado' }
     }
@@ -95,8 +95,6 @@ export const comprarCupon = async (id_cupon) => {
     if (fechaActual < cupon.fecha_inicio || fechaActual > cupon.fecha_fin) {
       return { success: false, error: 'Oferta no vigente' }
     }
-
-    const codigoUnico = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 
     const { data: compra, error: errorCompra } = await supabase
       .from('CuponesComprados')
@@ -123,12 +121,12 @@ export const comprarCupon = async (id_cupon) => {
       console.error('Error al reducir stock:', errorStock)
     }
 
-    return { 
-      success: true, 
-      data: { 
+    return {
+      success: true,
+      data: {
         codigo: codigoUnico,
-        compra 
-      } 
+        compra
+      }
     }
 
   } catch (error) {

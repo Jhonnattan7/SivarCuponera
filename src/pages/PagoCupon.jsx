@@ -2,30 +2,57 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { comprarCupon } from '../lib/api';
 import Layout from '../components/layout/Layout';
+import { supabase } from '../lib/supabase';
 
 const PagoCupon = () => {
   const [success, setSuccess] = useState(false);
-  const [codigo, setCodigo] = useState('');
   const [errorFecha, setErrorFecha] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
-  
+  const [comprando, setComprando] = useState(false);
+
+
+  const registrarCompra = async (cupon, userId) => {
+    const { error } = await supabase
+      .from('CuponesComprados')
+      .insert({
+        id_cupones: cupon.id_cupones,
+        id: userId,
+        estado: 'Vigente'
+      });
+
+    if (error) throw error;
+  };
+
+  const handleComprar = async () => {
+    setComprando(true);
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const userId = session.user.id;
+
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await registrarCompra(oferta, userId);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setComprando(false);
+  };
+
   const { id_cupon, precio } = location.state || {};
 
-  const generarCodigo = () => {
-    let code = '';
-    for (let i = 0; i < 16; i++) {
-      code += Math.floor(Math.random() * 10);
-    }
-    return code;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorFecha('');
     const formData = new FormData(e.target);
     const fecha = formData.get('fecha');
-    
+
     const match = /^\d{2}\/\d{2}$/.test(fecha);
     if (!match) {
       setErrorFecha('La fecha debe estar en formato MM/AA');
@@ -41,16 +68,15 @@ const PagoCupon = () => {
       setErrorFecha(`El año debe ser igual o mayor a ${actual.toString().padStart(2, '0')} y menor a 100`);
       return;
     }
-    
+
     if (!id_cupon) {
       setErrorFecha('No se encontró el cupón seleccionado');
       return;
     }
 
-    const compra = await comprarCupon(id_cupon);
+    const compra = await handleComprar(id_cupon);
     if (compra.success) {
       setSuccess(true);
-      setCodigo(compra.data.codigo || generarCodigo());
     } else {
       setErrorFecha(compra.error || 'Error al registrar la compra');
     }
