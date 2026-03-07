@@ -65,9 +65,9 @@ export default function MisCuponesComprados() {
 
       <div className="flex gap-3 mb-6 flex-wrap">
         <button
-          onClick={() => setFiltro('disponible')}
+          onClick={() => setFiltro('Vigente')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            filtro === 'disponible'
+            filtro === 'Vigente'
               ? 'bg-primary text-white'
               : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
           }`}

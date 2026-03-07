@@ -101,10 +101,10 @@ export const comprarCupon = async (id_cupon) => {
     const { data: compra, error: errorCompra } = await supabase
       .from('CuponesComprados')
       .insert({
-        id_cupon: id_cupon,
+        id_cupones: id_cupon,
         id: user.id,
         codigo: codigoUnico,
-        estado: 'disponible'
+        estado: 'Vigente'
       })
       .select()
       .single()
