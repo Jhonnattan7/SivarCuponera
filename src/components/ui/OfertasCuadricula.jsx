@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { obtenerOfertasActivas, calcularDescuento } from '../../lib/api'
+import { obtenerOfertasActivas, calcularDescuento } from "../../utils/api";
 import OfertaCard from './OfertaCard'
 
 export default function OfertasCuadricula({ rubroSeleccionado, busqueda }) {

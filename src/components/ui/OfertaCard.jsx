@@ -1,4 +1,4 @@
-import { calcularDescuento, calcularDiasRestantes } from '../../lib/api';
+import { calcularDescuento, calcularDiasRestantes } from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
 
 export default function OfertaCard({ oferta }) {

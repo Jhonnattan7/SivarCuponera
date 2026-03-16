@@ -1,6 +1,6 @@
-import Hero from '../../components/ofertas/Hero'
-import Sidebar from '../../components/ofertas/Sidebar'
-import OfertasCuadricula from '../../components/ofertas/OfertasCuadricula'
+import Hero from '../../components/ui/Hero';
+import Sidebar from '../../components/ui/Sidebar';
+import OfertasCuadricula from '../../components/ui/OfertasCuadricula';
 
 export default function Home({ rubroSeleccionado, onSeleccionarRubro, busqueda, setBusqueda }) {
   return (

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { obtenerRubros } from '../../lib/api'
+import { obtenerRubros } from '../../utils/api'
 
 export default function Sidebar({ rubroSeleccionado, onSeleccionarRubro }) {
   const [rubros, setRubros] = useState([])
