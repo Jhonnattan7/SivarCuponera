@@ -48,6 +48,11 @@ export default function Header() {
                     Panel Admin
                   </Link>
                 )}
+                {profile?.role === 'company_admin' && (
+                  <Link to="/company" className="text-emerald-400 hover:text-white font-bold border border-emerald-400 px-3 py-1 rounded hover:bg-emerald-600 hover:border-transparent transition">
+                    Panel Empresa
+                  </Link>
+                )}
 
                 <div className="flex items-center space-x-3 pl-4 border-l border-slate-700">
                   <span className="text-sm text-slate-300">
@@ -112,6 +117,11 @@ export default function Header() {
                 {profile?.role === 'admin' && (
                   <Link to="/admin" className="block py-2 text-yellow-400 font-bold" onClick={() => setMenuAbierto(false)}>
                     Ir al Panel Admin
+                  </Link>
+                )}
+                {profile?.role === 'company_admin' && (
+                  <Link to="/company" className="block py-2 text-emerald-400 font-bold" onClick={() => setMenuAbierto(false)}>
+                    Ir al Panel Empresa
                   </Link>
                 )}
                 <div className="pt-4 border-t border-slate-700">

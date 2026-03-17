@@ -29,10 +29,12 @@ export default function LogIn() {
         setError(null);
         setLoading(true);
         try {
-            const { profile } = await login(formData.email, formData.password);
+            const result = await login(formData.email, formData.password);
+            const userProfile = result.profile;
             const from = location.state?.from?.pathname;
-            navigate(from ?? redirectMap[profile.role] ?? "/", { replace: true });
+            navigate(from ?? redirectMap[userProfile?.role] ?? "/", { replace: true });
         } catch (err) {
+            console.error(err);
             setError("Correo o contraseña incorrectos.");
         } finally {
             setLoading(false);

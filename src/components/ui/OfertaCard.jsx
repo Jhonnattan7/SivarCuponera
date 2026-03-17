@@ -74,11 +74,11 @@ export default function OfertaCard({ oferta }) {
 
       <button
         className="w-full mt-4 py-3 sm:py-3.5 bg-oxford-navy text-white font-bold rounded-lg hover:bg-[#003366] transition-colors text-sm sm:text-base"
-        onClick={() => navigate('/pago-cupon', { 
-          state: { 
+        onClick={() => navigate('/pago-cupon', {
+          state: {
             id_cupon: oferta.id_cupones,
-            precio: oferta.precio_oferta 
-          } 
+            precio: oferta.precio_oferta
+          }
         })}
       >
         Comprar Cupón

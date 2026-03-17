@@ -27,9 +27,11 @@ import CompanyFormPage from "../pages/admin/CompanyFormPage";
 import OffersReviewPage from "../pages/admin/OffersReviewPage";
 
 //Company
-// import CompanyLayout from "../pages/company/CompanyLayout";
-// import OffersPage from "../pages/company/OffersPage";
-// import OfferFormPage from "../pages/company/OfferFormPage";
+import CompanyLayout from "../pages/company/CompanyLayout";
+import DashboardPageCompany from "../pages/company/DashboardPage";
+import EmployeesPage from "../pages/company/EmployeesPage";
+import OffersPage from "../pages/company/OffersPage";
+import OfferFormPage from "../pages/company/OfferFormPage";
 
 //Employee
 // import EmployeeLayout from "../pages/employee/EmployeeLayout";
@@ -43,9 +45,9 @@ export default function AppRouter() {
 
         {/* ── Sitio público + cliente autenticado ── */}
         <Route element={<Layout />}>
-          <Route path="/"           element={<Home />} />
+          <Route path="/" element={<Home />} />
           {/* <Route path="/offers/:id" element={<OfferDetailPage />} /> */}
-          
+
           <Route
             path="/client/coupons"
             element={
@@ -65,12 +67,12 @@ export default function AppRouter() {
         </Route>
 
         {/* ── Auth: solo accesibles sin sesión activa ── */}
-        <Route path="/login"            element={<LogIn />} />
-        <Route path="/signup"           element={<SignUp />} />
-        <Route path="/forgot-password"  element={<ForgotPassword />} />
+        <Route path="/login" element={<LogIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* ── Reset password: siempre pública ── */}
-        <Route path="/reset-password"   element={<ResetPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* ── Admin ── */}
         <Route
@@ -82,17 +84,17 @@ export default function AppRouter() {
           }
         >
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard"          element={<DashboardPage />} />
-          <Route path="companies"          element={<CompaniesPage />} />
-          <Route path="companies/new"      element={<CompanyFormPage />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="companies" element={<CompaniesPage />} />
+          <Route path="companies/new" element={<CompanyFormPage />} />
           <Route path="companies/:id/edit" element={<CompanyFormPage />} />
           {/* <Route path="companies/:id"      element={<CompanyDetailPage />} /> */}
-          <Route path="categories"         element={<CategoriesPage />} />
-          
+          <Route path="categories" element={<CategoriesPage />} />
+
           {/* <Route path="clients"            element={<ClientsPage />} /> */}
-          {<Route path="offers/review"      element={<OffersReviewPage />} /> }
+          {<Route path="offers/review" element={<OffersReviewPage />} />}
           {/* <Route path="settings"           element={<AdminSettings />} /> */}
-          <Route path="*"                  element={<div>Página en construcción (Admin)</div>} />
+          <Route path="*" element={<div>Página en construcción (Admin)</div>} />
         </Route>
 
         {/* ── Company Admin ── */}
@@ -100,14 +102,16 @@ export default function AppRouter() {
           path="/company"
           element={
             <ProtectedRoute allowedRoles={["company_admin"]}>
-              <div>Panel Empresa (En construcción)</div>
-              {/* <CompanyLayout /> */}
+              <CompanyLayout />
             </ProtectedRoute>
           }
         >
-          {/* <Route index element={<Navigate to="offers" replace />} />
-          <Route path="offers"          element={<OffersPage />} />
-          <Route path="offers/new"      element={<OfferFormPage />} /> */}
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardPageCompany />} />
+          <Route path="offers" element={<OffersPage />} />
+          <Route path="offers/new" element={<OfferFormPage />} />
+          <Route path="offers/:id/edit" element={<OfferFormPage />} />
+          <Route path="employees" element={<EmployeesPage />} />
         </Route>
 
         {/* ── Empleado ── */}
