@@ -75,12 +75,7 @@ export default function CompaniesPage() {
                   {company.commission_pct}%
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                  <Link
-                    to={`/admin/companies/${company.id}`}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    Ver
-                  </Link>
+                  {/* Botón Ver eliminado por no ser necesario en este flujo */}
                   <Link
                     to={`/admin/companies/${company.id}/edit`}
                     className="text-indigo-600 hover:text-indigo-900"
@@ -98,7 +93,7 @@ export default function CompaniesPage() {
             ))}
             {companies.length === 0 && (
               <tr>
-                <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
                   No hay empresas registradas.
                 </td>
               </tr>

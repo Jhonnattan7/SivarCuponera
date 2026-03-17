@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { getCategories, createCategory, deleteCategory } from "../../services/categoriesService";
+import { getCategories, createCategory, updateCategory, deleteCategory } from "../../services/categoriesService";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [newCategory, setNewCategory] = useState("");
+  
+  // Estado para formulario
+  const [formData, setFormData] = useState("");
+  const [editingId, setEditingId] = useState(null); // Si es null, estamos creando. Si tiene ID, editando.
   const [error, setError] = useState(null);
 
-  // Cargar rubros al iniciar
   useEffect(() => {
     loadCategories();
   }, []);
@@ -18,31 +20,46 @@ export default function CategoriesPage() {
       const data = await getCategories();
       setCategories(data);
     } catch (err) {
-      setError("Error al cargar rubros: " + err.message);
+      setError("Error al cargar rubros.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Crear rubro
-  const handleCreate = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newCategory.trim()) return;
+    if (!formData.trim()) return;
 
     try {
-      await createCategory(newCategory);
-      setNewCategory("");
-      loadCategories(); // Recargar lista
-      alert("Rubro creado exitosamente");
+      if (editingId) {
+        // MODO EDICIÓN
+        await updateCategory(editingId, formData);
+        alert("Rubro actualizado correctamente");
+      } else {
+        // MODO CREACIÓN
+        await createCategory(formData);
+        alert("Rubro creado correctamente");
+      }
+      setFormData("");
+      setEditingId(null);
+      loadCategories();
     } catch (err) {
-      alert("Error al crear: " + err.message);
+      alert("Error al guardar: " + err.message);
     }
   };
 
-  // Eliminar rubro
-  const handleDelete = async (id, name) => {
-    if (!window.confirm(`¿Estás seguro de eliminar el rubro "${name}"?`)) return;
+  const handleEditClick = (cat) => {
+    setEditingId(cat.id);
+    setFormData(cat.name);
+  };
 
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setFormData("");
+  };
+
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`¿Eliminar rubro "${name}"?`)) return;
     try {
       await deleteCategory(id);
       loadCategories();
@@ -51,44 +68,53 @@ export default function CategoriesPage() {
     }
   };
 
-  if (loading && categories.length === 0) return <p className="p-4">Cargando rubros...</p>;
-
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">Gestión de Rubros</h1>
 
       {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
 
-      {/* Formulario de Creación */}
-      <form onSubmit={handleCreate} className="flex gap-4 mb-8 items-end bg-slate-50 p-4 rounded-lg border">
+      {/* Formulario Reutilizable (Crear / Editar) */}
+      <form onSubmit={handleSubmit} className={`flex gap-4 mb-8 items-end p-4 rounded-lg border ${editingId ? 'bg-yellow-50 border-yellow-200' : 'bg-slate-50'}`}>
         <div className="flex-1">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Nuevo Rubro
+            {editingId ? "Editar Rubro" : "Nuevo Rubro"}
           </label>
           <input
             type="text"
             className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none"
             placeholder="Ej. Tecnología, Salud, Restaurantes..."
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
+            value={formData}
+            onChange={(e) => setFormData(e.target.value)}
           />
         </div>
+        
+        {editingId && (
+          <button
+            type="button"
+            onClick={handleCancelEdit}
+            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition"
+          >
+            Cancelar
+          </button>
+        )}
+
         <button
           type="submit"
-          disabled={!newCategory.trim()}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50 transition"
+          disabled={!formData.trim()}
+          className={`${editingId ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-blue-600 hover:bg-blue-700'} text-white px-6 py-2 rounded disabled:opacity-50 transition`}
         >
-          Agregar
+          {editingId ? "Actualizar" : "Agregar"}
         </button>
       </form>
 
-      {/* Tabla de Rubros */}
+      {/* Tabla */}
       <div className="overflow-x-auto border rounded-lg">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -97,7 +123,13 @@ export default function CategoriesPage() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {cat.name}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                  <button
+                    onClick={() => handleEditClick(cat)}
+                    className="text-blue-600 hover:text-blue-900"
+                  >
+                    Editar
+                  </button>
                   <button
                     onClick={() => handleDelete(cat.id, cat.name)}
                     className="text-red-600 hover:text-red-900"
@@ -107,13 +139,6 @@ export default function CategoriesPage() {
                 </td>
               </tr>
             ))}
-            {categories.length === 0 && (
-              <tr>
-                <td colSpan="2" className="px-6 py-4 text-center text-gray-500">
-                  No hay rubros registrados aún.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
