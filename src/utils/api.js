@@ -1,20 +1,13 @@
 import { supabase } from '../services/supabaseClient'
 
-export const obtenerOfertasActivas = async (idCategoria = null, busqueda = null) => {
+export const obtenerOfertasActivas = async (idCategoria = null) => {
   try {
     let query = supabase
-      .from('Cupones')
+      .from('active_offers')
       .select('*')
-      .gt('cantidad_cupon', 0)
-      .lte('fecha_inicio', new Date().toISOString())
-      .gte('fecha_fin', new Date().toISOString())
 
     if (idCategoria) {
-      query = query.eq('id_categoria', idCategoria)
-    }
-
-    if (busqueda) {
-      query = query.or(`titulo.ilike.%${busqueda}%,Tienda.ilike.%${busqueda}%`)
+      query = query.ilike('category_name', idCategoria)
     }
 
     const { data, error } = await query
@@ -31,9 +24,9 @@ export const obtenerOfertasActivas = async (idCategoria = null, busqueda = null)
 export const obtenerRubros = async () => {
   try {
     const { data, error } = await supabase
-      .from('Categorias')
-      .select('*')
-      .order('nombre', { ascending: true })
+      .from('categories')
+      .select('id, name')
+      .order('name', { ascending: true })
 
     if (error) throw error
 
@@ -48,18 +41,18 @@ export const obtenerCategorias = obtenerRubros
 
 export const obtenerCuponesPorUsuario = async (userId) => {
   const { data, error } = await supabase
-    .from('CuponesComprados')
+    .from('coupons')
     .select(`
       *,
-      Cupones (
-        titulo,
-        Tienda,
-        descripcion,
-        imagen,
-        fecha_fin
+      offers (
+        title,
+        description,
+        end_date,
+        coupon_expiry_date,
+        companies ( name )
       )
     `)
-    .eq('id', userId)
+    .eq('client_id', userId)
 
   if (error) {
     console.error('Error al cargar cupones del usuario:', error)
@@ -69,7 +62,7 @@ export const obtenerCuponesPorUsuario = async (userId) => {
   return data || []
 }
 
-export const comprarCupon = async (id_cupon) => {
+export const comprarCupon = async (offerId) => {
   try {
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -77,57 +70,13 @@ export const comprarCupon = async (id_cupon) => {
       return { success: false, error: 'Usuario no autenticado' }
     }
 
-    const { data: cupon, error: errorCupon } = await supabase
-      .from('Cupones')
-      .select('*')
-      .eq('id_cupones', id_cupon)
-      .single()
+    const { data, error } = await supabase.rpc('purchase_coupon', {
+      p_offer_id: offerId
+    })
 
-    if (errorCupon || !cupon) {
-      return { success: false, error: 'Cupón no encontrado' }
-    }
+    if (error) throw error
 
-    if (cupon.cantidad_cupon <= 0) {
-      return { success: false, error: 'Stock agotado' }
-    }
-
-    const fechaActual = new Date().toISOString()
-    if (fechaActual < cupon.fecha_inicio || fechaActual > cupon.fecha_fin) {
-      return { success: false, error: 'Oferta no vigente' }
-    }
-
-    const { data: compra, error: errorCompra } = await supabase
-      .from('CuponesComprados')
-      .insert({
-        id_cupones: id_cupon,
-        id: user.id,
-        codigo: codigoUnico,
-        estado: 'Vigente'
-      })
-      .select()
-      .single()
-
-    if (errorCompra) {
-      console.error('Error al registrar compra:', errorCompra)
-      return { success: false, error: 'Error al registrar la compra' }
-    }
-
-    const { error: errorStock } = await supabase
-      .from('Cupones')
-      .update({ cantidad_cupon: cupon.cantidad_cupon - 1 })
-      .eq('id_cupones', id_cupon)
-
-    if (errorStock) {
-      console.error('Error al reducir stock:', errorStock)
-    }
-
-    return {
-      success: true,
-      data: {
-        codigo: codigoUnico,
-        compra
-      }
-    }
+    return { success: true, data: { codigo: data } }
 
   } catch (error) {
     console.error('Error en comprarCupon:', error)
@@ -143,6 +92,5 @@ export const calcularDescuento = (precioRegular, precioOferta) => {
 export const calcularDiasRestantes = (fechaFin) => {
   const hoy = new Date()
   const fin = new Date(fechaFin)
-  const diferencia = fin - hoy
-  return Math.ceil(diferencia / (1000 * 60 * 60 * 24))
+  return Math.ceil((fin - hoy) / (1000 * 60 * 60 * 24))
 }

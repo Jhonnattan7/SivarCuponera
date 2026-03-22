@@ -81,15 +81,15 @@ export default function Sidebar({ rubroSeleccionado, onSeleccionarRubro }) {
             
             {rubros.map((rubro) => (
               <button
-                key={rubro.id_categoria}
-                onClick={() => onSeleccionarRubro(rubro.id_categoria)}
+                key={rubro.id}
+                onClick={() => onSeleccionarRubro(rubro.name)}
                 className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-all ${
-                  rubroSeleccionado === rubro.id_categoria
+                  rubroSeleccionado === rubro.name
                     ? 'bg-primary text-white shadow-sm'
                     : 'bg-slate-100 text-slate-700 hover:bg-slate-300 hover:shadow-sm'
                 }`}
               >
-                {rubro.nombre}
+                {rubro.name}
               </button>
             ))}
           </div>

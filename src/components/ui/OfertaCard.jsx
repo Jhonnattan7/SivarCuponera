@@ -2,9 +2,9 @@ import { calcularDescuento, calcularDiasRestantes } from '../../utils/api';
 import { useNavigate } from 'react-router-dom';
 
 export default function OfertaCard({ oferta }) {
-  const descuento = calcularDescuento(oferta.precio_regular, oferta.precio_oferta);
-  const diasRestantes = calcularDiasRestantes(oferta.fecha_fin);
-  const stockBajo = oferta.cantidad_cupon <= 5;
+  const descuento = calcularDescuento(oferta.regular_price, oferta.offer_price);
+  const diasRestantes = calcularDiasRestantes(oferta.end_date);
+  const stockBajo = oferta.coupons_available !== null && oferta.coupons_available <= 5;
   const navigate = useNavigate();
 
   const getEtiquetaColor = () => {
@@ -18,19 +18,19 @@ export default function OfertaCard({ oferta }) {
     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex flex-col sm:flex-row items-start gap-4">
         <div className="w-full sm:w-32 sm:h-32 h-48 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
-          {oferta.imagen ? (
+          {oferta.IMG ? (
             <img
-              src={`/img/${oferta.imagen}`}
-              alt={oferta.titulo}
+              src={`/img/${oferta.IMG}`}
+              alt={oferta.title}
               className="w-full h-full object-cover"
               onError={(e) => {
                 e.target.style.display = 'none'
-                e.target.parentElement.innerHTML = `<span class="text-slate-400 text-4xl font-bold">${oferta.Tienda?.charAt(0) || '?'}</span>`
+                e.target.parentElement.innerHTML = `<span class="text-slate-400 text-4xl font-bold">${oferta.company_name?.charAt(0) || '?'}</span>`
               }}
             />
           ) : (
             <span className="text-slate-400 text-4xl font-bold">
-              {oferta.Tienda?.charAt(0) || '?'}
+              {oferta.company_name?.charAt(0) || '?'}
             </span>
           )}
         </div>
@@ -43,29 +43,29 @@ export default function OfertaCard({ oferta }) {
           )}
 
           <h3 className="text-xl font-bold text-primary leading-tight">
-            {oferta.titulo}
+            {oferta.title}
           </h3>
 
           <p className="font-semibold text-oxford-navy text-lg">
-            {oferta.Tienda || 'Tienda'}
+            {oferta.company_name || 'Tienda'}
           </p>
 
           <p className="text-sm text-slate-600 line-clamp-2">
-            {oferta.descripcion}
+            {oferta.description}
           </p>
 
           <div className="flex items-baseline gap-3 pt-2">
             <span className="text-slate-400 line-through text-base">
-              ${oferta.precio_regular?.toFixed(2)}
+              ${oferta.regular_price?.toFixed(2)}
             </span>
             <span className="text-primary font-bold text-2xl">
-              ${oferta.precio_oferta?.toFixed(2)}
+              ${oferta.offer_price?.toFixed(2)}
             </span>
           </div>
 
           {stockBajo && (
             <p className="text-red-600 text-xs font-medium mt-2">
-              ¡Solo quedan {oferta.cantidad_cupon} cupones!
+              ¡Solo quedan {oferta.coupons_available} cupones!
             </p>
           )}
 
@@ -76,8 +76,8 @@ export default function OfertaCard({ oferta }) {
         className="w-full mt-4 py-3 sm:py-3.5 bg-oxford-navy text-white font-bold rounded-lg hover:bg-[#003366] transition-colors text-sm sm:text-base"
         onClick={() => navigate('/pago-cupon', {
           state: {
-            id_cupon: oferta.id_cupones,
-            precio: oferta.precio_oferta
+            id_cupon: oferta.id,
+            precio: oferta.offer_price
           }
         })}
       >
@@ -85,7 +85,7 @@ export default function OfertaCard({ oferta }) {
       </button>
 
       <p className="text-xs sm:text-sm text-slate-400 text-center mt-2">
-        Válido hasta el {new Date(oferta.fecha_fin).toLocaleDateString('es-ES')}
+        Válido hasta el {new Date(oferta.end_date).toLocaleDateString('es-ES')}
         ({diasRestantes} días restantes)
       </p>
     </div>

@@ -2,18 +2,22 @@
 import { supabase } from "./supabaseClient";
 
 export async function login(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const normalizedEmail = email.trim().toLowerCase();
+  const { data, error } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password });
   if (error) throw error;
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", data.user.id)
-    .single();
+    .maybeSingle();
 
-  if (profileError) throw profileError;
+  // Permitir inicio de sesión aunque el perfil no exista todavía.
+  if (profileError) {
+    console.error("Error obteniendo perfil durante login:", profileError.message);
+  }
 
-  return { session: data.session, user: data.user, profile };
+  return { session: data.session, user: data.user, profile: profile ?? null };
 }
 
 export async function signup({ firstName, lastName, phone, email, address, dui, password }) {

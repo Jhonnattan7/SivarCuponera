@@ -20,6 +20,22 @@ export default function LogIn() {
     const successMessage = location.state?.message;
     const { profile } = useAuth();
 
+    const getLoginErrorMessage = (err) => {
+        const message = err?.message?.toLowerCase?.() || "";
+
+        if (message.includes("invalid login credentials")) {
+            return "Correo o contraseña incorrectos.";
+        }
+        if (message.includes("email not confirmed")) {
+            return "Debes confirmar tu correo antes de iniciar sesión.";
+        }
+        if (message.includes("too many requests")) {
+            return "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.";
+        }
+
+        return err?.message || "No se pudo iniciar sesión. Inténtalo de nuevo.";
+    }
+
     function handleChange(e) {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     }
@@ -35,7 +51,7 @@ export default function LogIn() {
             navigate(from ?? redirectMap[userProfile?.role] ?? "/", { replace: true });
         } catch (err) {
             console.error(err);
-            setError("Correo o contraseña incorrectos.");
+            setError(getLoginErrorMessage(err));
         } finally {
             setLoading(false);
         }

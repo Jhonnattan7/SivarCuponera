@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { obtenerOfertasActivas, calcularDescuento } from "../../utils/api";
+import { obtenerOfertasActivas, calcularDescuento } from "../../utils/api"
 import OfertaCard from './OfertaCard'
 
 export default function OfertasCuadricula({ rubroSeleccionado, busqueda }) {
@@ -12,29 +12,26 @@ export default function OfertasCuadricula({ rubroSeleccionado, busqueda }) {
     cargarOfertas()
   }, [rubroSeleccionado, busqueda])
 
-
   const cargarOfertas = async () => {
     try {
       setLoading(true)
       setError(null)
-
-      console.log('Cargando ofertas - Categoría:', rubroSeleccionado, 'Búsqueda:', busqueda)
 
       const resultado = await obtenerOfertasActivas(rubroSeleccionado)
 
       if (resultado.success) {
         let ofertasFiltradas = resultado.data
 
+        // Filtro de búsqueda con columnas correctas de active_offers
         if (busqueda) {
           const busquedaLower = busqueda.toLowerCase()
           ofertasFiltradas = ofertasFiltradas.filter(oferta =>
-            oferta.Tienda?.toLowerCase().includes(busquedaLower) ||
-            oferta.titulo?.toLowerCase().includes(busquedaLower) ||
-            oferta.descripcion?.toLowerCase().includes(busquedaLower)
+            oferta.company_name?.toLowerCase().includes(busquedaLower) ||
+            oferta.title?.toLowerCase().includes(busquedaLower) ||
+            oferta.description?.toLowerCase().includes(busquedaLower)
           )
         }
 
-        console.log('Ofertas filtradas:', ofertasFiltradas)
         setOfertas(ofertasFiltradas)
       } else {
         setError(resultado.error)
@@ -50,28 +47,19 @@ export default function OfertasCuadricula({ rubroSeleccionado, busqueda }) {
   const obtenerOfertasOrdenadas = () => {
     let ofertasOrdenadas = [...ofertas]
 
-    if (busqueda) {
-      const termino = busqueda.toLowerCase()
-      ofertasOrdenadas = ofertasOrdenadas.filter((oferta) => {
-        const titulo = oferta.titulo || ''
-        const marca = oferta.Tienda || ''
-        return titulo.toLowerCase().includes(termino) || marca.toLowerCase().includes(termino)
-      })
-    }
-
     switch (ordenamiento) {
       case 'recientes':
-        ofertasOrdenadas.sort((a, b) => new Date(b.fecha_inicio) - new Date(a.fecha_inicio))
+        ofertasOrdenadas.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
         break
       case 'descuento':
         ofertasOrdenadas.sort((a, b) => {
-          const descuentoA = calcularDescuento(a.precio_regular, a.precio_oferta)
-          const descuentoB = calcularDescuento(b.precio_regular, b.precio_oferta)
+          const descuentoA = calcularDescuento(a.regular_price, a.offer_price)
+          const descuentoB = calcularDescuento(b.regular_price, b.offer_price)
           return descuentoB - descuentoA
         })
         break
       case 'populares':
-        ofertasOrdenadas.sort((a, b) => (b.cantidad_cupon || 0) - (a.cantidad_cupon || 0))
+        ofertasOrdenadas.sort((a, b) => (b.coupons_sold || 0) - (a.coupons_sold || 0))
         break
       default:
         break
@@ -159,7 +147,8 @@ export default function OfertasCuadricula({ rubroSeleccionado, busqueda }) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {ofertasOrdenadas.map((oferta) => (
-            <OfertaCard key={oferta.id_cupones} oferta={oferta} />
+            // CORREGIDO: era oferta.id_cupones, ahora es oferta.id
+            <OfertaCard key={oferta.id} oferta={oferta} />
           ))}
         </div>
       )}

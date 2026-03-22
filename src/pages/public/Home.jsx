@@ -1,8 +1,12 @@
-import Hero from '../../components/ui/Hero';
-import Sidebar from '../../components/ui/Sidebar';
-import OfertasCuadricula from '../../components/ui/OfertasCuadricula';
+import { useState } from 'react'
+import Hero from '../../components/ui/Hero'
+import Sidebar from '../../components/ui/Sidebar'
+import OfertasCuadricula from '../../components/ui/OfertasCuadricula'
 
-export default function Home({ rubroSeleccionado, onSeleccionarRubro, busqueda, setBusqueda }) {
+export default function Home() {
+  const [rubroSeleccionado, setRubroSeleccionado] = useState(null)
+  const [busqueda, setBusqueda] = useState('')
+
   return (
     <>
       <Hero busqueda={busqueda} setBusqueda={setBusqueda} />
@@ -10,7 +14,7 @@ export default function Home({ rubroSeleccionado, onSeleccionarRubro, busqueda, 
         <div className="flex flex-col lg:flex-row gap-6">
           <Sidebar
             rubroSeleccionado={rubroSeleccionado}
-            onSeleccionarRubro={onSeleccionarRubro}
+            onSeleccionarRubro={setRubroSeleccionado}
           />
           <OfertasCuadricula
             rubroSeleccionado={rubroSeleccionado}

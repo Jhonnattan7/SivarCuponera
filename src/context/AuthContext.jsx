@@ -4,7 +4,7 @@ import { supabase } from "../services/supabaseClient";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [session, setSession] = useState(undefined);
+  const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -23,26 +23,60 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
+    let isMounted = true;
 
-        if (event === "SIGNED_OUT") {
-          setProfile(null);
-          setLoading(false);
-          return;
-        }
+    const syncAuthState = async (currentSession) => {
+      if (!isMounted) return;
 
-        if (session?.user) {
-          const p = await fetchProfile(session.user.id);
-          setProfile(p);
-        }
+      setSession(currentSession ?? null);
 
+      if (!currentSession?.user) {
+        setProfile(null);
         setLoading(false);
+        return;
       }
-    );
 
-    return () => subscription.unsubscribe();
+      const p = await fetchProfile(currentSession.user.id);
+      if (!isMounted) return;
+
+      setProfile(p);
+      setLoading(false);
+    };
+
+    const initializeAuth = async () => {
+      const { data: { session: initialSession } } = await supabase.auth.getSession();
+      await syncAuthState(initialSession);
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (!isMounted) return;
+
+      setSession(nextSession ?? null);
+
+      if (event === "SIGNED_OUT" || !nextSession?.user) {
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+
+      // Evita lock timeout de Supabase: no hacer await de queries dentro del callback.
+      setTimeout(async () => {
+        if (!isMounted) return;
+        const p = await fetchProfile(nextSession.user.id);
+        if (!isMounted) return;
+        setProfile(p);
+        setLoading(false);
+      }, 0);
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const value = {
