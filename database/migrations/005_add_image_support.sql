@@ -1,4 +1,13 @@
--- Actualizar la vista active_offers para incluir IMG
+-- ============================================================
+-- LA CUPONERA — Soporte de Imágenes v5
+-- Añade columna IMG a offers y actualiza la vista active_offers
+-- =====================================================================
+
+-- Agregar columna IMG a la tabla offers
+ALTER TABLE public.offers
+ADD COLUMN IMG TEXT;
+
+-- Recrear vista active_offers para incluir IMG
 DROP VIEW IF EXISTS public.active_offers CASCADE;
 
 CREATE VIEW public.active_offers AS
@@ -20,8 +29,8 @@ SELECT
   o.coupon_limit,
   o.description,
   o.other_details,
-  o."IMG",
   o.created_at,
+  o.IMG,
   c.name                                     AS company_name,
   c.code                                     AS company_code,
   cat.name                                   AS category_name,
@@ -41,5 +50,3 @@ WHERE
     o.coupon_limit IS NULL
     OR COALESCE(cc.sold, 0) < o.coupon_limit
   );
-
-ALTER VIEW public.active_offers SET (security_invoker = true);

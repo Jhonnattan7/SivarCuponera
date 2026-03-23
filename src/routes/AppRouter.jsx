@@ -15,7 +15,7 @@ import ResetPassword from "../pages/public/ResetPassword";
 
 //Client
 import MisCupones from "../pages/client/MisCupones";
-// import PagoCupon from "../pages/client/PagoCupon";
+import PagoCupon from "../pages/client/PagoCupon";
 // import ClientSettings from "../pages/client/ClientSettings";
 
 //Admin
@@ -55,6 +55,10 @@ export default function AppRouter() {
                 <MisCupones />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="pago-cupon"
+            element={<PagoCupon />}
           />
           {/* <Route
             path="/client/settings"

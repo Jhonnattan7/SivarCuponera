@@ -7,6 +7,21 @@ export default function OfertaCard({ oferta }) {
   const stockBajo = oferta.coupons_available !== null && oferta.coupons_available <= 5;
   const navigate = useNavigate();
 
+  const handleComprarClick = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    navigate('/pago-cupon', {
+      state: {
+        offerId: oferta.id,
+        price: oferta.offer_price,
+        title: oferta.title,
+        companyName: oferta.company_name,
+        image: oferta.IMG
+      }
+    })
+  }
+
   const getEtiquetaColor = () => {
     if (descuento >= 50) return 'bg-red-100 text-red-700';
     if (descuento >= 30) return 'bg-orange-100 text-orange-700';
@@ -73,13 +88,9 @@ export default function OfertaCard({ oferta }) {
       </div>
 
       <button
+        type="button"
         className="w-full mt-4 py-3 sm:py-3.5 bg-oxford-navy text-white font-bold rounded-lg hover:bg-[#003366] transition-colors text-sm sm:text-base"
-        onClick={() => navigate('/pago-cupon', {
-          state: {
-            id_cupon: oferta.id,
-            precio: oferta.offer_price
-          }
-        })}
+        onClick={handleComprarClick}
       >
         Comprar Cupón
       </button>
