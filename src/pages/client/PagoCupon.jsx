@@ -97,7 +97,11 @@ export default function PagoCupon() {
 
     try {
       const { data: userData } = await supabase.auth.getUser()
-      const compra = await comprarCupon(offerId)
+      const compra = await comprarCupon(offerId, {
+        titulo,
+        empresa,
+        precio: monto.toFixed(2)
+      })
 
       if (!compra.success) {
         setError(compra.error || 'No se pudo procesar el pago.')
@@ -116,124 +120,124 @@ export default function PagoCupon() {
   }
 
   return (
-      <section className="max-w-4xl mx-auto px-4 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <article className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-            <h2 className="text-xl font-bold text-oxford-navy mb-4">Resumen del Cupón</h2>
+    <section className="max-w-4xl mx-auto px-4 py-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <article className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <h2 className="text-xl font-bold text-oxford-navy mb-4">Resumen del Cupón</h2>
 
-            <div className="flex items-start gap-4">
-              <div className="w-28 h-28 rounded-lg bg-slate-100 overflow-hidden flex items-center justify-center">
-                {image ? (
-                  <img src={`/img/${image}`} alt={titulo} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-slate-400 text-3xl font-bold">{empresa.charAt(0)}</span>
-                )}
-              </div>
-              <div>
-                <p className="text-sm text-slate-500">Empresa</p>
-                <p className="font-semibold text-slate-800">{empresa}</p>
-                <p className="text-sm text-slate-500 mt-2">Oferta</p>
-                <p className="font-semibold text-slate-800">{titulo}</p>
-              </div>
+          <div className="flex items-start gap-4">
+            <div className="w-28 h-28 rounded-lg bg-slate-100 overflow-hidden flex items-center justify-center">
+              {image ? (
+                <img src={`/img/${image}`} alt={titulo} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-slate-400 text-3xl font-bold">{empresa.charAt(0)}</span>
+              )}
             </div>
-
-            <div className="mt-5 pt-4 border-t border-slate-200">
-              <p className="text-sm text-slate-500">Total a pagar</p>
-              <p className="text-3xl font-bold text-primary">${monto.toFixed(2)}</p>
+            <div>
+              <p className="text-sm text-slate-500">Empresa</p>
+              <p className="font-semibold text-slate-800">{empresa}</p>
+              <p className="text-sm text-slate-500 mt-2">Oferta</p>
+              <p className="font-semibold text-slate-800">{titulo}</p>
             </div>
-          </article>
+          </div>
 
-          <article className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-            <h2 className="text-xl font-bold text-oxford-navy mb-4">Pago con Tarjeta</h2>
-            <p className="text-sm text-slate-500 mb-4">
-              Puedes ingresar una tarjeta de prueba. No se validará contra un procesador real.
-            </p>
+          <div className="mt-5 pt-4 border-t border-slate-200">
+            <p className="text-sm text-slate-500">Total a pagar</p>
+            <p className="text-3xl font-bold text-primary">${monto.toFixed(2)}</p>
+          </div>
+        </article>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
+        <article className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+          <h2 className="text-xl font-bold text-oxford-navy mb-4">Pago con Tarjeta</h2>
+          <p className="text-sm text-slate-500 mb-4">
+            Puedes ingresar una tarjeta de prueba. No se validará contra un procesador real.
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <label className="block">
+              <span className="text-sm text-slate-700">Nombre del titular</span>
+              <input
+                type="text"
+                name="nombre"
+                value={form.nombre}
+                onChange={handleChange}
+                required
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm text-slate-700">Número de tarjeta</span>
+              <input
+                type="text"
+                name="numero"
+                value={form.numero}
+                onChange={handleChange}
+                maxLength={16}
+                inputMode="numeric"
+                required
+                className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
               <label className="block">
-                <span className="text-sm text-slate-700">Nombre del titular</span>
+                <span className="text-sm text-slate-700">Expiración (MM/AA)</span>
                 <input
                   type="text"
-                  name="nombre"
-                  value={form.nombre}
+                  name="fecha"
+                  value={form.fecha}
                   onChange={handleChange}
+                  placeholder="MM/AA"
+                  maxLength={5}
                   required
                   className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </label>
 
               <label className="block">
-                <span className="text-sm text-slate-700">Número de tarjeta</span>
+                <span className="text-sm text-slate-700">CVV</span>
                 <input
                   type="text"
-                  name="numero"
-                  value={form.numero}
+                  name="cvv"
+                  value={form.cvv}
                   onChange={handleChange}
-                  maxLength={16}
+                  maxLength={3}
                   inputMode="numeric"
                   required
                   className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </label>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block">
-                  <span className="text-sm text-slate-700">Expiración (MM/AA)</span>
-                  <input
-                    type="text"
-                    name="fecha"
-                    value={form.fecha}
-                    onChange={handleChange}
-                    placeholder="MM/AA"
-                    maxLength={5}
-                    required
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="text-sm text-slate-700">CVV</span>
-                  <input
-                    type="text"
-                    name="cvv"
-                    value={form.cvv}
-                    onChange={handleChange}
-                    maxLength={3}
-                    inputMode="numeric"
-                    required
-                    className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </label>
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+                {error}
               </div>
+            )}
 
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
-                  {error}
-                </div>
-              )}
+            <button
+              type="submit"
+              disabled={procesando}
+              className="w-full mt-2 py-3 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition disabled:opacity-60"
+            >
+              {procesando ? 'Procesando pago...' : 'Procesar Pago'}
+            </button>
+          </form>
+        </article>
+      </div>
 
-              <button
-                type="submit"
-                disabled={procesando}
-                className="w-full mt-2 py-3 bg-primary text-white font-bold rounded-lg hover:opacity-90 transition disabled:opacity-60"
-              >
-                {procesando ? 'Procesando pago...' : 'Procesar Pago'}
-              </button>
-            </form>
-          </article>
+      {codigoGenerado && (
+        <div className="mt-6 bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-center">
+          <p className="text-emerald-700 font-semibold">Pago aprobado y cupón generado</p>
+          <p className="mt-2 text-xs text-slate-600">Código del cupón</p>
+          <p className="text-2xl font-mono font-bold tracking-wider text-emerald-800">{codigoGenerado}</p>
+          <p className="mt-2 text-sm text-slate-600">
+            {userEmail && <>Correo: {userEmail} | </>}
+            Fecha/Hora: {new Date(transactionAt).toLocaleString('es-SV')}
+          </p>
         </div>
-
-        {codigoGenerado && (
-          <div className="mt-6 bg-emerald-50 border border-emerald-200 rounded-xl p-5 text-center">
-            <p className="text-emerald-700 font-semibold">Pago aprobado y cupón generado</p>
-            <p className="mt-2 text-xs text-slate-600">Código del cupón</p>
-            <p className="text-2xl font-mono font-bold tracking-wider text-emerald-800">{codigoGenerado}</p>
-            <p className="mt-2 text-sm text-slate-600">
-              {userEmail && <>Correo: {userEmail} | </>}
-              Fecha/Hora: {new Date(transactionAt).toLocaleString('es-SV')}
-            </p>
-          </div>
-        )}
-      </section>
+      )}
+    </section>
   )
 }

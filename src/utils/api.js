@@ -62,22 +62,30 @@ export const obtenerCuponesPorUsuario = async (userId) => {
   return data || []
 }
 
-export const comprarCupon = async (offerId) => {
+export const comprarCupon = async (offerId, datosCupon = {}) => {
   try {
     const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { success: false, error: 'Usuario no autenticado' }
 
-    if (!user) {
-      return { success: false, error: 'Usuario no autenticado' }
-    }
-
-    const { data, error } = await supabase.rpc('purchase_coupon', {
-      p_offer_id: offerId
-    })
-
+    const { data, error } = await supabase.rpc('purchase_coupon', { p_offer_id: offerId })
     if (error) throw error
 
-    return { success: true, data: { codigo: data } }
+    // Enviar correo (no bloquea la compra si falla)
+    try {
+      await supabase.functions.invoke('send-coupon-email', {
+        body: {
+          email: user.email,
+          codigo: data,
+          titulo: datosCupon.titulo || 'Oferta',
+          empresa: datosCupon.empresa || 'Empresa',
+          precio: datosCupon.precio || '0.00',
+        }
+      })
+    } catch (e) {
+      console.warn('Correo no enviado:', e)
+    }
 
+    return { success: true, data: { codigo: data } }
   } catch (error) {
     console.error('Error en comprarCupon:', error)
     return { success: false, error: error.message }
