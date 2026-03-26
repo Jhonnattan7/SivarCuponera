@@ -166,3 +166,106 @@ Este proyecto es parte de un trabajo académico.
 ---
 
 Para más información sobre la configuración de Supabase, consulta [SETUP-SUPABASE.md](SETUP-SUPABASE.md)
+
+```
+SivarCuponera
+├─ database
+│  ├─ migrations
+│  │  ├─ 001_initial_schema.sql
+│  │  ├─ 002_views.sql
+│  │  ├─ 003_functions_and_triggers.sql
+│  │  ├─ 004_row_level_security.sql
+│  │  ├─ 005_add_image_support.sql
+│  │  ├─ 006_coupon_purchase_setup.sql
+│  │  ├─ 007_add_product_name.sql
+│  │  ├─ 008_seed_test_data.sql
+│  │  └─ README.md
+│  └─ README.md
+├─ eslint.config.js
+├─ index.html
+├─ package-lock.json
+├─ package.json
+├─ public
+│  ├─ img
+│  │  ├─ cafe.jpg
+│  │  ├─ gorras.jpg
+│  │  ├─ MAC.jpg
+│  │  ├─ mascotas.jpg
+│  │  ├─ radio.webp
+│  │  └─ zapatosSportline.png
+│  └─ vite.svg
+├─ README.md
+├─ src
+│  ├─ App.css
+│  ├─ App.jsx
+│  ├─ assets
+│  │  └─ react.svg
+│  ├─ components
+│  │  ├─ common
+│  │  │  ├─ Footer.jsx
+│  │  │  ├─ info.txt
+│  │  │  └─ PopupFooter.jsx
+│  │  └─ ui
+│  │     ├─ CuponCard.jsx
+│  │     ├─ Header.jsx
+│  │     ├─ Hero.jsx
+│  │     ├─ info.txt
+│  │     ├─ Layout.jsx
+│  │     ├─ OfertaCard.jsx
+│  │     ├─ OfertasCuadricula.jsx
+│  │     └─ Sidebar.jsx
+│  ├─ context
+│  │  └─ AuthContext.jsx
+│  ├─ hooks
+│  │  └─ info.txt
+│  ├─ index.css
+│  ├─ main.jsx
+│  ├─ pages
+│  │  ├─ admin
+│  │  │  ├─ AdminLayout.jsx
+│  │  │  ├─ CategoriesPage.jsx
+│  │  │  ├─ CompaniesPage.jsx
+│  │  │  ├─ CompanyFormPage.jsx
+│  │  │  ├─ DashboardPage.jsx
+│  │  │  ├─ info.txt
+│  │  │  └─ OffersReviewPage.jsx
+│  │  ├─ client
+│  │  │  ├─ info.txt
+│  │  │  ├─ MisCupones.jsx
+│  │  │  ├─ MisCuponesComprados.jsx
+│  │  │  └─ PagoCupon.jsx
+│  │  ├─ company
+│  │  │  ├─ CompanyLayout.jsx
+│  │  │  ├─ DashboardPage.jsx
+│  │  │  ├─ EmployeesPage.jsx
+│  │  │  ├─ info.txt
+│  │  │  ├─ OfferFormPage.jsx
+│  │  │  └─ OffersPage.jsx
+│  │  ├─ employee
+│  │  │  └─ info.txt
+│  │  └─ public
+│  │     ├─ ForgotPassword.jsx
+│  │     ├─ Home.jsx
+│  │     ├─ info.txt
+│  │     ├─ LogIn.jsx
+│  │     ├─ ResetPassword.jsx
+│  │     └─ SignUp.jsx
+│  ├─ routes
+│  │  ├─ AppRouter.jsx
+│  │  └─ ProtectedRoute.jsx
+│  ├─ services
+│  │  ├─ authService.js
+│  │  ├─ categoriesService.js
+│  │  ├─ companiesService.js
+│  │  ├─ employeesService.js
+│  │  ├─ info.txt
+│  │  ├─ offersService.js
+│  │  ├─ statsService.js
+│  │  └─ supabaseClient.js
+│  └─ utils
+│     ├─ api.js
+│     └─ info.txt
+├─ supabase-schema.sql
+└─ vite.config.js
+
+```
