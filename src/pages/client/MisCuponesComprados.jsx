@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../services/supabaseClient'
 import CuponCard from '../../components/ui/CuponCard'
 import Layout from '../../components/ui/Layout'
 
 export default function MisCuponesComprados() {
   const [cupones, setCupones] = useState([])
   const [loading, setLoading] = useState(true)
-  const [filtro, setFiltro] = useState('disponible')
+  const [filtro, setFiltro] = useState('vigente')
+
+  const normalizarEstado = (estado) => (estado || '').toString().trim().toLowerCase()
 
   useEffect(() => {
     cargarCupones()
@@ -46,7 +48,7 @@ export default function MisCuponesComprados() {
     }
   }
 
-  const cuponesFiltrados = cupones.filter(c => c.estado === filtro)
+  const cuponesFiltrados = cupones.filter(c => normalizarEstado(c.estado) === filtro)
 
   if (loading) {
     return (
@@ -65,9 +67,9 @@ export default function MisCuponesComprados() {
 
       <div className="flex gap-3 mb-6 flex-wrap">
         <button
-          onClick={() => setFiltro('Vigente')}
+          onClick={() => setFiltro('vigente')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            filtro === 'Vigente'
+            filtro === 'vigente'
               ? 'bg-primary text-white'
               : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
           }`}
@@ -105,7 +107,7 @@ export default function MisCuponesComprados() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {cuponesFiltrados.map((cupon) => (
-            <CuponCard key={cupon.id_cupones} cupon={cupon} />
+            <CuponCard key={cupon.id || cupon.id_cupones} cupon={cupon} />
           ))}
         </div>
       )}

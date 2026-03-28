@@ -1,101 +1,65 @@
-import { supabase } from "../../lib/supabase";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+function CuponCard({ cupon }) {
+    const oferta = cupon?.Cupones || {}
+    const titulo = oferta.titulo || 'Cupón'
+    const tienda = oferta.Tienda || 'Tienda'
+    const descripcion = oferta.descripcion || 'Sin descripción disponible'
+    const estado = (cupon?.estado || '').toString().trim().toLowerCase()
 
-function CuponCard({ oferta }) {
+    const estadoLabel = estado === 'vigente'
+        ? 'Disponible'
+        : estado === 'usado'
+            ? 'Usado'
+            : estado === 'vencido'
+                ? 'Vencido'
+                : 'Sin estado'
 
-    const navigate = useNavigate();
-    const { user } = supabase.auth.useUser();
+    const estadoClase = estado === 'vigente'
+        ? 'bg-emerald-100 text-emerald-700'
+        : estado === 'usado'
+            ? 'bg-slate-200 text-slate-700'
+            : 'bg-amber-100 text-amber-700'
 
-    const redirigir = () => {
-        if (user) {
-            navigate('/pago-cupon', { state: { id_cupon: oferta.id_cupones, precio: oferta.precio_oferta } });
-        } else {
-            navigate('/login');
-        }
-    };
     return (
-        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg transition-all">
-
+        <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
             <div className="w-full h-48 bg-slate-100 flex items-center justify-center overflow-hidden">
                 {oferta.imagen ? (
                     <img
                         src={`/img/${oferta.imagen}`}
-                        alt={oferta.titulo}
+                        alt={titulo}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                            e.target.style.display = 'none'
-                            e.target.parentElement.innerHTML = `<span class="text-slate-400 text-5xl font-bold">${oferta.Tienda?.charAt(0) || '?'}</span>`
+                            e.currentTarget.style.display = 'none'
                         }}
                     />
                 ) : (
                     <span className="text-slate-400 text-5xl font-bold">
-                        {oferta.Tienda?.charAt(0) || '?'}
+                        {tienda?.charAt(0) || '?'}
                     </span>
                 )}
             </div>
 
             <div className="p-5 space-y-3">
+                <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full ${estadoClase}`}>
+                    {estadoLabel}
+                </span>
 
-                {descuento > 0 && (
-                    <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full ${getEtiquetaColor()}`}>
-                        Ahorra {descuento}%
-                    </span>
-                )}
-                <h3 className="text-xl font-bold text-primary leading-tight">
-                    {oferta.titulo}
-                </h3>
+                <h3 className="text-xl font-bold text-primary leading-tight">{titulo}</h3>
 
-                <p className="font-semibold text-oxford-navy text-lg">
-                    {oferta.Tienda || 'Tienda'}
-                </p>
+                <p className="font-semibold text-oxford-navy text-lg">{tienda}</p>
 
-                <p className="text-sm text-slate-600 line-clamp-2 min-h-[40px]">
-                    {oferta.descripcion}
-                </p>
-                <div className="flex items-baseline gap-3 pt-2">
-                    <span className="text-slate-400 line-through text-base">
-                        ${oferta.precio_regular?.toFixed(2)}
-                    </span>
-                    <span className="text-primary font-bold text-2xl">
-                        ${oferta.precio_oferta?.toFixed(2)}
-                    </span>
-                </div>
-                {stockBajo && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                        <p className="text-red-600 text-sm font-semibold text-center">
-                            ¡Solo quedan {oferta.cantidad_cupon} cupones!
-                        </p>
-                    </div>
-                )}
-
-                {oferta.etiqueta && (
-                    <span className="inline-block text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                        {oferta.etiqueta}
-                    </span>
-                )}
-            </div>
-
-            <div className="px-5 pb-5">
-                <button
-                    onClick={redirigir}
-                    disabled={comprando || oferta.cantidad_cupon === 0}
-                    className="w-full py-3.5 bg-oxford-navy text-white font-bold rounded-lg hover:bg-[#003366] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {comprando ? 'Procesando...' : oferta.cantidad_cupon === 0 ? 'Agotado' : 'Comprar Cupón'}
-                </button>
+                <p className="text-sm text-slate-600 line-clamp-2 min-h-[40px]">{descripcion}</p>
             </div>
 
             <div className="px-5 pb-4 pt-2 border-t border-slate-100">
                 <p className="text-sm text-slate-500 text-center">
-                    Válido hasta el <span className="font-semibold text-slate-700">{new Date(oferta.fecha_fin).toLocaleDateString('es-ES')}</span>
-                </p>
-                <p className="text-xs text-slate-400 text-center mt-1">
-                    {diasRestantes} días restantes
+                    Válido hasta el{' '}
+                    <span className="font-semibold text-slate-700">
+                        {oferta.fecha_fin ? new Date(oferta.fecha_fin).toLocaleDateString('es-ES') : 'N/D'}
+                    </span>
                 </p>
             </div>
         </div>
     )
 }
 
-export default CuponCard;
+export default CuponCard
