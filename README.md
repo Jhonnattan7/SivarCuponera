@@ -135,13 +135,13 @@ Si no ves ofertas o el login falla, revisa lo siguiente:
 3. Que existan perfiles y roles creados en la tabla `profiles`.
 4. Que la oferta tenga estado válido y fechas activas.
 
-# Equipo de Desarrollo
+## Equipo de Desarrollo
 
-Alexander Martinez - Autenticación y Configuracon de Subapase
-Napoleon Días - Frontend / Modulo Compra Cupon
-Marco Mazzini - Frontend / Modulo Admin Empresa
-Jhonnatan Peñate - Frontend / Modulo Administador Total y Documentación
-Jade Cárcamo - Frontend / Modulo de Cliente Mis Cupones y Canje Empleado
+1. Alexander Martinez - Autenticación y Configuracon de Subapase
+2. Napoleon Días - Frontend / Modulo Compra Cupon
+3. Marco Mazzini - Frontend / Modulo Admin Empresa
+4. Jhonnatan Peñate - Frontend / Modulo Administador Total y Documentación
+5. Jade Cárcamo - Frontend / Modulo de Cliente Mis Cupones y Canje Empleado
 
 ## Licencia
 
