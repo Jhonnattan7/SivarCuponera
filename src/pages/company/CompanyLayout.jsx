@@ -18,9 +18,11 @@ export default function CompanyLayout() {
                 <div className="p-6 border-b border-slate-700">
                     <h2 className="text-xl font-bold">Panel Empresa</h2>
                     {profile?.companies?.name && (
-                        <p className="text-xs font-bold text-emerald-500 uppercase tracking-wider mb-1">{profile.companies.name}</p>
+                        <p className="mt-1 text-[11px] font-semibold text-cyan-400 uppercase tracking-[0.12em] leading-relaxed wrap-break-word">
+                            {profile.companies.name}
+                        </p>
                     )}
-                    <p className="text-sm text-slate-400 mt-1">
+                    <p className="text-sm text-slate-400 mt-1 leading-relaxed">
                         Hola, {profile?.first_name || "Admin de Empresa"}
                     </p>
                 </div>
