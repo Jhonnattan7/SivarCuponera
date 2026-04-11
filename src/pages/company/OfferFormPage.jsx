@@ -4,6 +4,8 @@ import { useAuth } from "../../context/AuthContext";
 import { createOffer, updateOffer, resubmitOffer } from "../../services/offersService";
 import { supabase } from "../../services/supabaseClient";
 
+const STORAGE_BUCKET = "offers-images";
+
 export default function OfferFormPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -18,6 +20,7 @@ export default function OfferFormPage() {
         start_date: "",
         end_date: "",
         coupon_expiry_date: "",
+        IMG: "",
     });
 
     const [loading, setLoading] = useState(false);
@@ -25,6 +28,7 @@ export default function OfferFormPage() {
     const [isEditMode, setIsEditMode] = useState(false);
     const [offerStatus, setOfferStatus] = useState(null);
     const [rejectionReason, setRejectionReason] = useState(null);
+    const [imageFile, setImageFile] = useState(null);
 
     useEffect(() => {
         if (id) {
@@ -56,6 +60,7 @@ export default function OfferFormPage() {
                 start_date: data.start_date || "",
                 end_date: data.end_date || "",
                 coupon_expiry_date: data.coupon_expiry_date || "",
+                IMG: data.IMG || "",
             });
             setOfferStatus(data.status);
             setRejectionReason(data.rejection_reason);
@@ -71,6 +76,52 @@ export default function OfferFormPage() {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
+    const handleFileChange = (e) => {
+        const file = e.target.files?.[0] || null;
+        if (!file) {
+            setImageFile(null);
+            return;
+        }
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+        if (!allowedTypes.includes(file.type)) {
+            setErrorMsg("Formato de imagen no permitido. Usa JPG, PNG o WEBP.");
+            e.target.value = "";
+            return;
+        }
+
+        const maxBytes = 5 * 1024 * 1024;
+        if (file.size > maxBytes) {
+            setErrorMsg("La imagen supera el límite de 5 MB.");
+            e.target.value = "";
+            return;
+        }
+
+        setErrorMsg("");
+        setImageFile(file);
+    };
+
+    const uploadOfferImage = async () => {
+        if (!imageFile) return formData.IMG || null;
+
+        const fileExt = imageFile.name.split(".").pop()?.toLowerCase() || "jpg";
+        const fileName = `${profile.company_id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+            .from(STORAGE_BUCKET)
+            .upload(fileName, imageFile, {
+                cacheControl: "3600",
+                upsert: false,
+            });
+
+        if (uploadError) {
+            throw new Error(`No se pudo subir la imagen: ${uploadError.message}`);
+        }
+
+        const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName);
+        return data.publicUrl;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMsg("");
@@ -82,11 +133,14 @@ export default function OfferFormPage() {
 
         try {
             setLoading(true);
+            const imageUrl = await uploadOfferImage();
+
             const payload = {
                 ...formData,
                 regular_price: parseFloat(formData.regular_price),
                 offer_price: parseFloat(formData.offer_price),
                 coupon_limit: parseInt(formData.coupon_limit, 10),
+                IMG: imageUrl,
             };
 
             if (isEditMode) {
@@ -250,6 +304,24 @@ export default function OfferFormPage() {
                             required
                             disabled={loading}
                         />
+                    </div>
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Imagen de la Oferta</label>
+                        <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            onChange={handleFileChange}
+                            className="w-full border p-2 rounded focus:ring-primary outline-none"
+                            disabled={loading}
+                        />
+                        <p className="text-xs text-slate-500 mt-1">
+                            Formatos permitidos: JPG, PNG, WEBP (máximo 5 MB).
+                        </p>
+                        {formData.IMG && !imageFile && (
+                            <p className="text-xs text-slate-500 mt-1">
+                                Imagen actual cargada.
+                            </p>
+                        )}
                     </div>
                 </div>
 

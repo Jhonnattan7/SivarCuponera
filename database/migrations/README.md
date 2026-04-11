@@ -72,6 +72,13 @@ Las migraciones se ejecutan en orden numérico. Cada archivo contiene una fase e
 - Permite resolver joins `coupons -> offers -> companies` solo para cupones propios
 - **Dependencias**: Requiere `004_row_level_security.sql`
 
+### 010_storage_offer_images_rls.sql
+**Descripción**: Configuración de Storage para imágenes de ofertas
+- Crea/actualiza bucket `offers-images` (público, 5 MB, MIME restringidos)
+- Agrega políticas RLS en `storage.objects` para `company_admin`
+- Restringe escritura por carpeta con prefijo `company_id/`
+- **Dependencias**: Requiere `003_functions_and_triggers.sql` (usa `get_user_role()` y `get_user_company_id()`)
+
 ## Orden de Ejecución Requerido
 
 ```
@@ -84,6 +91,7 @@ Las migraciones se ejecutan en orden numérico. Cada archivo contiene una fase e
 7. 007_add_product_name.sql
 8. 008_seed_test_data.sql (OPCIONAL - solo para desarrollo/prueba)
 9. 009_fix_client_coupon_visibility.sql
+10. 010_storage_offer_images_rls.sql
 ```
 
 ## Cómo Aplicar las Migraciones
@@ -181,6 +189,10 @@ DROP TABLE IF EXISTS table_name CASCADE;
 ### v9 (Actual)
 - Fix de visibilidad de cupones para usuarios cliente
 - Políticas de lectura limitada para offers/companies relacionadas con cupones propios
+
+### v10 (Actual)
+- Configuración de bucket y políticas RLS para subida de imágenes de ofertas por empresa
+- Control de acceso por rol y carpeta `company_id/`
 
 ### v8 (Actual)
 - Migraciones organizadas en carpeta `database/migrations/`

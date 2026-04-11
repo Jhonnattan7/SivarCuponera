@@ -3,6 +3,9 @@ function CuponCard({ cupon }) {
     const titulo = oferta.titulo || 'Cupón'
     const tienda = oferta.Tienda || 'Tienda'
     const descripcion = oferta.descripcion || 'Sin descripción disponible'
+    const imageSrc = oferta.imagen
+        ? (oferta.imagen.startsWith('http') ? oferta.imagen : `/img/${oferta.imagen}`)
+        : null
     const estado = (cupon?.estado || '').toString().trim().toLowerCase()
 
     const estadoLabel = estado === 'vigente'
@@ -22,9 +25,9 @@ function CuponCard({ cupon }) {
     return (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
             <div className="w-full h-48 bg-slate-100 flex items-center justify-center overflow-hidden">
-                {oferta.imagen ? (
+                {imageSrc ? (
                     <img
-                        src={`/img/${oferta.imagen}`}
+                        src={imageSrc}
                         alt={titulo}
                         className="w-full h-full object-cover"
                         onError={(e) => {

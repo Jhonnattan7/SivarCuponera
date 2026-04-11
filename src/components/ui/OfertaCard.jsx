@@ -5,6 +5,9 @@ export default function OfertaCard({ oferta }) {
   const descuento = calcularDescuento(oferta.regular_price, oferta.offer_price);
   const diasRestantes = calcularDiasRestantes(oferta.end_date);
   const stockBajo = oferta.coupons_available !== null && oferta.coupons_available <= 5;
+  const imageSrc = oferta.IMG
+    ? (oferta.IMG.startsWith('http') ? oferta.IMG : `/img/${oferta.IMG}`)
+    : null;
   const navigate = useNavigate();
 
   const handleComprarClick = (e) => {
@@ -33,9 +36,9 @@ export default function OfertaCard({ oferta }) {
     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex flex-col sm:flex-row items-start gap-4">
         <div className="w-full sm:w-32 sm:h-32 h-48 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
-          {oferta.IMG ? (
+          {imageSrc ? (
             <img
-              src={`/img/${oferta.IMG}`}
+              src={imageSrc}
               alt={oferta.title}
               className="w-full h-full object-cover"
               onError={(e) => {
