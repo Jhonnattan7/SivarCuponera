@@ -90,6 +90,7 @@ export default function CompanyFormPage() {
 
       const payload = {
         ...formData,
+        email: formData.email.trim().toLowerCase(),
         phone: normalizedPhone
       };
 
@@ -132,6 +133,7 @@ export default function CompanyFormPage() {
               name="name"
               value={formData.name}
               onChange={handleChange}
+              placeholder="Ej. Restaurante La Esquina"
               className="mt-1 block w-full border p-2 rounded"
             />
           </div>
@@ -152,16 +154,16 @@ export default function CompanyFormPage() {
 
         {/* Datos Contacto */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Email (Usuario Admin Empresa)</label>
+          <label className="block text-sm font-medium text-gray-700">Correo de Contacto (Dueño/Encargado)</label>
           <input
             required
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
+            placeholder="Ej. contacto@empresa.com"
             className="mt-1 block w-full border p-2 rounded"
           />
-          <p className="text-xs text-gray-500 mt-1">Este correo se usará para el inicio de sesión del administrador de la empresa.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -173,6 +175,7 @@ export default function CompanyFormPage() {
               name="contact_name"
               value={formData.contact_name}
               onChange={handleChange}
+              placeholder="Ej. Ana Martínez"
               className="mt-1 block w-full border p-2 rounded"
             />
           </div>
@@ -196,7 +199,6 @@ export default function CompanyFormPage() {
               placeholder="Ej. +50371234567"
               className="mt-1 block w-full border p-2 rounded"
             />
-            <p className="text-xs text-gray-500 mt-1">Formato internacional: + código país + número (máx. 16 caracteres).</p>
           </div>
         </div>
 
@@ -208,6 +210,7 @@ export default function CompanyFormPage() {
              rows="2"
              value={formData.address}
              onChange={handleChange}
+             placeholder="Ej. Colonia Escalón, San Salvador"
              className="mt-1 block w-full border p-2 rounded"
            ></textarea>
         </div>

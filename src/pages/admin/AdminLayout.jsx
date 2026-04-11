@@ -91,6 +91,20 @@ export default function AdminLayout() {
           >
             Rubros
           </Link>
+          <Link
+            to="/admin/clients"
+            onClick={() => setSidebarOpen(false)}
+            className="block px-4 py-2 hover:bg-slate-700 rounded transition"
+          >
+            Clientes
+          </Link>
+          <Link
+            to="/admin/company-admins"
+            onClick={() => setSidebarOpen(false)}
+            className="block px-4 py-2 hover:bg-slate-700 rounded transition"
+          >
+            Admins Empresa
+          </Link>
           <div className="border-t border-slate-700 my-2"></div>
           <Link
             to="/admin/offers/review"

@@ -24,6 +24,9 @@ import DashboardPage from "../pages/admin/DashboardPage";
 import CategoriesPage from "../pages/admin/CategoriesPage";
 import CompaniesPage from "../pages/admin/CompaniesPage";
 import CompanyFormPage from "../pages/admin/CompanyFormPage";
+import CompanyDetailPage from "../pages/admin/CompanyDetailPage";
+import ClientsPage from "../pages/admin/ClientsPage";
+import CompanyAdminsPage from "../pages/admin/CompanyAdminsPage";
 import OffersReviewPage from "../pages/admin/OffersReviewPage";
 
 //Company
@@ -92,10 +95,11 @@ export default function AppRouter() {
           <Route path="companies" element={<CompaniesPage />} />
           <Route path="companies/new" element={<CompanyFormPage />} />
           <Route path="companies/:id/edit" element={<CompanyFormPage />} />
-          {/* <Route path="companies/:id"      element={<CompanyDetailPage />} /> */}
+          <Route path="companies/:id" element={<CompanyDetailPage />} />
           <Route path="categories" element={<CategoriesPage />} />
 
-          {/* <Route path="clients"            element={<ClientsPage />} /> */}
+          <Route path="clients" element={<ClientsPage />} />
+          <Route path="company-admins" element={<CompanyAdminsPage />} />
           {<Route path="offers/review" element={<OffersReviewPage />} />}
           {/* <Route path="settings"           element={<AdminSettings />} /> */}
           <Route path="*" element={<div>Página en construcción (Admin)</div>} />

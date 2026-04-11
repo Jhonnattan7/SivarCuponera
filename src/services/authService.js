@@ -91,7 +91,7 @@ export async function createEmployee({ firstName, lastName, email, password, com
   return data;
 }
 
-export async function createCompanyAdmin({ firstName, lastName, email, companyId }) {
+export async function createCompanyAdmin({ firstName, lastName, email, companyId, password }) {
   const tempSupabase = createClient(
     import.meta.env.VITE_SUPABASE_URL,
     import.meta.env.VITE_SUPABASE_ANON_KEY,
@@ -100,7 +100,7 @@ export async function createCompanyAdmin({ firstName, lastName, email, companyId
 
   const { data, error } = await tempSupabase.auth.signUp({
     email,
-    password: "Temporal123*",
+    password,
   });
   if (error) throw error;
   if (!data.user) throw new Error("No se pudo crear el usuario en Auth.");

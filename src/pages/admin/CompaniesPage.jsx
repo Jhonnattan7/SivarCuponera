@@ -75,7 +75,12 @@ export default function CompaniesPage() {
                   {company.commission_pct}%
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                  {/* Botón Ver eliminado por no ser necesario en este flujo */}
+                  <Link
+                    to={`/admin/companies/${company.id}`}
+                    className="text-slate-600 hover:text-slate-900"
+                  >
+                    Ver
+                  </Link>
                   <Link
                     to={`/admin/companies/${company.id}/edit`}
                     className="text-indigo-600 hover:text-indigo-900"
