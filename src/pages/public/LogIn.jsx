@@ -5,8 +5,8 @@ import { useAuth } from "../../context/AuthContext";
 
 const redirectMap = {
     admin: "/admin/dashboard",
-    company_admin: "/company/offers",
-    company_employee: "/employee/redeem",
+    company_admin: "/company/dashboard",
+    company_employee: "/empleado/canje",
     client: "/",
 };
 
