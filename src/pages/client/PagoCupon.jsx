@@ -19,6 +19,9 @@ export default function PagoCupon() {
   const titulo = location.state?.title ?? 'Cupón seleccionado'
   const empresa = location.state?.companyName ?? 'Empresa'
   const image = location.state?.image ?? null
+  const imageSrc = image
+    ? (typeof image === 'string' && image.startsWith('http') ? image : `/img/${image}`)
+    : null
 
   const [form, setForm] = useState(initialForm)
   const [procesando, setProcesando] = useState(false)
@@ -127,8 +130,8 @@ export default function PagoCupon() {
 
           <div className="flex items-start gap-4">
             <div className="w-28 h-28 rounded-lg bg-slate-100 overflow-hidden flex items-center justify-center">
-              {image ? (
-                <img src={`/img/${image}`} alt={titulo} className="w-full h-full object-cover" />
+              {imageSrc ? (
+                <img src={imageSrc} alt={titulo} className="w-full h-full object-cover" />
               ) : (
                 <span className="text-slate-400 text-3xl font-bold">{empresa.charAt(0)}</span>
               )}
