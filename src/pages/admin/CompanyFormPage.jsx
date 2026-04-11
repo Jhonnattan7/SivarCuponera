@@ -3,6 +3,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getCategories } from "../../services/categoriesService";
 import { createCompany, getCompanyById, updateCompany } from "../../services/companiesService";
 
+const E164_PHONE_REGEX = /^\+[1-9]\d{7,14}$/;
+
+const normalizeInternationalPhone = (phone) => {
+  const cleaned = phone.replace(/[\s-]/g, "").trim();
+  if (!cleaned) return "";
+
+  const hasPlus = cleaned.startsWith("+");
+  const digitsOnly = cleaned.replace(/\D/g, "");
+
+  return hasPlus ? `+${digitsOnly}` : digitsOnly;
+};
+
 export default function CompanyFormPage() {
   const { id } = useParams(); // Si existe id, es EDICIÓN
   const navigate = useNavigate();
@@ -71,11 +83,22 @@ export default function CompanyFormPage() {
         throw new Error("El código debe tener 3 letras seguidas de 3 números (Ej: EMP123)");
       }
 
+      const normalizedPhone = normalizeInternationalPhone(formData.phone);
+      if (!E164_PHONE_REGEX.test(normalizedPhone)) {
+        throw new Error("Teléfono inválido. Usa formato internacional (Ej: +50371234567)");
+      }
+
+      const payload = {
+        ...formData,
+        email: formData.email.trim().toLowerCase(),
+        phone: normalizedPhone
+      };
+
       if (id) {
-        await updateCompany(id, formData);
+        await updateCompany(id, payload);
         alert("Empresa actualizada correctamente");
       } else {
-        await createCompany(formData);
+        await createCompany(payload);
         alert("Empresa creada correctamente");
       }
       navigate("/admin/companies");
@@ -110,6 +133,7 @@ export default function CompanyFormPage() {
               name="name"
               value={formData.name}
               onChange={handleChange}
+              placeholder="Ej. Restaurante La Esquina"
               className="mt-1 block w-full border p-2 rounded"
             />
           </div>
@@ -130,16 +154,16 @@ export default function CompanyFormPage() {
 
         {/* Datos Contacto */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Email (Usuario Admin Empresa)</label>
+          <label className="block text-sm font-medium text-gray-700">Correo de Contacto (Dueño/Encargado)</label>
           <input
             required
             type="email"
             name="email"
             value={formData.email}
             onChange={handleChange}
+            placeholder="Ej. contacto@empresa.com"
             className="mt-1 block w-full border p-2 rounded"
           />
-          <p className="text-xs text-gray-500 mt-1">Este correo se usará para el inicio de sesión del administrador de la empresa.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -151,6 +175,7 @@ export default function CompanyFormPage() {
               name="contact_name"
               value={formData.contact_name}
               onChange={handleChange}
+              placeholder="Ej. Ana Martínez"
               className="mt-1 block w-full border p-2 rounded"
             />
           </div>
@@ -158,10 +183,20 @@ export default function CompanyFormPage() {
             <label className="block text-sm font-medium text-gray-700">Teléfono</label>
             <input
               required
-              type="text"
+              type="tel"
               name="phone"
               value={formData.phone}
-              onChange={handleChange}
+              onChange={(e) => {
+                const rawValue = e.target.value;
+                const sanitized = rawValue
+                  .replace(/[^\d+\s-]/g, "")
+                  .replace(/(?!^)\+/g, "");
+
+                setFormData((prev) => ({ ...prev, phone: sanitized }));
+              }}
+              inputMode="tel"
+              maxLength={16}
+              placeholder="Ej. +50371234567"
               className="mt-1 block w-full border p-2 rounded"
             />
           </div>
@@ -175,6 +210,7 @@ export default function CompanyFormPage() {
              rows="2"
              value={formData.address}
              onChange={handleChange}
+             placeholder="Ej. Colonia Escalón, San Salvador"
              className="mt-1 block w-full border p-2 rounded"
            ></textarea>
         </div>

@@ -15,6 +15,7 @@ export default function EmployeesPage() {
         firstName: "",
         lastName: "",
         email: "",
+        password: "",
     });
 
     useEffect(() => {
@@ -49,9 +50,9 @@ export default function EmployeesPage() {
                 ...formData,
                 companyId: profile.company_id,
             });
-            setSuccessMsg("Empleado creado exitosamente.");
+            setSuccessMsg("Empleado creado exitosamente. Es posible que debas iniciar sesión nuevamente si tu sesión se cerró.");
             setShowModal(false);
-            setFormData({ firstName: "", lastName: "", email: "" });
+            setFormData({ firstName: "", lastName: "", email: "", password: "" });
             loadEmployees();
         } catch (error) {
             console.error(error);
@@ -85,6 +86,7 @@ export default function EmployeesPage() {
 
             {errorMsg && <p className="text-red-600 mb-4">{errorMsg}</p>}
             {successMsg && <p className="text-green-600 mb-4">{successMsg}</p>}
+            <p className="text-sm text-slate-500 mb-4">En este módulo solo se permite crear y eliminar empleados.</p>
 
             {loading ? (
                 <p>Cargando empleados...</p>
@@ -113,7 +115,7 @@ export default function EmployeesPage() {
                                             onClick={() => handleDelete(emp.id)}
                                             className="text-red-500 hover:text-red-700 font-semibold"
                                         >
-                                            Baja Módulo / Eliminar
+                                            Eliminar
                                         </button>
                                     </td>
                                 </tr>
@@ -161,9 +163,20 @@ export default function EmployeesPage() {
                                     required
                                 />
                             </div>
+                            <div>
+                                <label className="block text-sm font-medium">Contraseña</label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    className="w-full border p-2 rounded"
+                                    required
+                                    minLength="6"
+                                />
+                            </div>
                             <p className="text-xs text-slate-500">
-                                El empleado recibirá su contraseña por la configuración de Auth de Supabase o usará "Temporal123*".<br />
-                                Nota: Crear un empleado desde el frontend puede cerrar la sesión actual de la empresa por limitaciones de Supabase Auth.
+                                Añade a un empleado
                             </p>
                             <div className="flex justify-end gap-2 mt-4">
                                 <button

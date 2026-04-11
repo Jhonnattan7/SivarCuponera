@@ -1,4 +1,5 @@
 // src/services/authService.js
+import { createClient } from "@supabase/supabase-js";
 import { supabase } from "./supabaseClient";
 
 export async function login(email, password) {
@@ -59,13 +60,22 @@ export async function updatePassword(newPassword) {
   if (error) throw error;
 }
 
-export async function createEmployee({ firstName, lastName, email, companyId }) {
-  const { data, error } = await supabase.auth.signUp({
+export async function createEmployee({ firstName, lastName, email, password, companyId }) {
+  // Creamos una instancia temporal para que el signUp no modifique la sesión actual (del admin)
+  const tempSupabase = createClient(
+    import.meta.env.VITE_SUPABASE_URL,
+    import.meta.env.VITE_SUPABASE_ANON_KEY,
+    { auth: { persistSession: false, autoRefreshToken: false } }
+  );
+
+  const { data, error } = await tempSupabase.auth.signUp({
     email,
-    password: "Temporal123*",
+    password,
   });
   if (error) throw error;
+  if (!data.user) throw new Error("No se pudo crear el usuario en Auth.");
 
+  // Usamos la instancia principal (que aún tiene la sesión de company_admin activa)
   const { error: profileError } = await supabase
     .from("profiles")
     .insert({
@@ -81,12 +91,19 @@ export async function createEmployee({ firstName, lastName, email, companyId }) 
   return data;
 }
 
-export async function createCompanyAdmin({ firstName, lastName, email, companyId }) {
-  const { data, error } = await supabase.auth.signUp({
+export async function createCompanyAdmin({ firstName, lastName, email, companyId, password }) {
+  const tempSupabase = createClient(
+    import.meta.env.VITE_SUPABASE_URL,
+    import.meta.env.VITE_SUPABASE_ANON_KEY,
+    { auth: { persistSession: false, autoRefreshToken: false } }
+  );
+
+  const { data, error } = await tempSupabase.auth.signUp({
     email,
-    password: "Temporal123*",
+    password,
   });
   if (error) throw error;
+  if (!data.user) throw new Error("No se pudo crear el usuario en Auth.");
 
   const { error: profileError } = await supabase
     .from("profiles")
