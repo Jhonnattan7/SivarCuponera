@@ -141,7 +141,7 @@ CREATE TABLE public.offers (
 CREATE TABLE public.coupons (
   id          UUID          PRIMARY KEY DEFAULT gen_random_uuid(),
   offer_id    UUID          NOT NULL REFERENCES public.offers(id) ON DELETE RESTRICT,
-  client_id   UUID          NOT NULL REFERENCES public.profiles(id) ON DELETE RESTRICT,
+  client_id   UUID          NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   code        TEXT          NOT NULL UNIQUE,
   status      coupon_status NOT NULL DEFAULT 'available',
   redeemed_by UUID          REFERENCES public.profiles(id) ON DELETE SET NULL,
@@ -151,7 +151,7 @@ CREATE TABLE public.coupons (
 
   CONSTRAINT chk_redeemed CHECK (
     status != 'redeemed'
-    OR (redeemed_by IS NOT NULL AND redeemed_at IS NOT NULL)
+    OR (redeemed_at IS NOT NULL)
   )
 );
 
