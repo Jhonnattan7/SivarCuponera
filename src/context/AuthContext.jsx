@@ -63,7 +63,6 @@ export function AuthProvider({ children }) {
 
       setLoading(true);
 
-      // Evita lock timeout de Supabase: no hacer await de queries dentro del callback.
       setTimeout(async () => {
         if (!isMounted) return;
         const p = await fetchProfile(nextSession.user.id);

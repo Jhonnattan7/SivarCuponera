@@ -13,16 +13,13 @@ export default function CompanyLayout() {
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col md:flex-row">
-            {/* Sidebar / Navegación */}
             <aside className="w-full md:w-64 bg-slate-800 text-white flex-shrink-0 flex flex-col h-screen sticky top-0">
                 <div className="p-6 border-b border-slate-700">
                     <h2 className="text-xl font-bold">Panel Empresa</h2>
                     {profile?.companies?.name && (
-                        <p className="mt-1 text-[11px] font-semibold text-cyan-400 uppercase tracking-[0.12em] leading-relaxed wrap-break-word">
-                            {profile.companies.name}
-                        </p>
+                        <p className="text-xs font-bold text-emerald-500 uppercase tracking-wider mb-1">{profile.companies.name}</p>
                     )}
-                    <p className="text-sm text-slate-400 mt-1 leading-relaxed">
+                    <p className="text-sm text-slate-400 mt-1">
                         Hola, {profile?.first_name || "Admin de Empresa"}
                     </p>
                 </div>
@@ -48,7 +45,6 @@ export default function CompanyLayout() {
                     </Link>
                 </nav>
 
-                {/* Footer del Sidebar */}
                 <div className="p-4 border-t border-slate-700 bg-slate-900">
                     <Link
                         to="/"
@@ -65,7 +61,6 @@ export default function CompanyLayout() {
                 </div>
             </aside>
 
-            {/* Contenido Principal */}
             <main className="flex-1 p-8 overflow-y-auto">
                 <div className="max-w-7xl mx-auto bg-white p-6 rounded-lg shadow-sm min-h-[500px]">
                     <Outlet />

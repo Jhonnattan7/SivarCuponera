@@ -2,11 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"
 import ProtectedRoute from "./ProtectedRoute";
 
-//Aquí importan las páginas que se van a desplegar
-// import {nombre del componente} from {ruta del componente}
-// Clasifiquenlas según las siguientes secciones de rol
-
-//Public
 import Layout from "../components/ui/Layout";
 import Home from "../pages/public/Home";
 import LogIn from "../pages/public/LogIn";
@@ -14,12 +9,9 @@ import SignUp from "../pages/public/SignUp";
 import ForgotPassword from "../pages/public/ForgotPassword";
 import ResetPassword from "../pages/public/ResetPassword";
 
-//Client
 import MisCuponesComprados from "../pages/client/MisCuponesComprados";
 import PagoCupon from "../pages/client/PagoCupon";
-// import ClientSettings from "../pages/client/ClientSettings";
 
-//Admin
 import AdminLayout from "../pages/admin/AdminLayout";
 import DashboardPage from "../pages/admin/DashboardPage";
 import CategoriesPage from "../pages/admin/CategoriesPage";
@@ -30,22 +22,33 @@ import ClientsPage from "../pages/admin/ClientsPage";
 import CompanyAdminsPage from "../pages/admin/CompanyAdminsPage";
 import OffersReviewPage from "../pages/admin/OffersReviewPage";
 
-//Company
 import CompanyLayout from "../pages/company/CompanyLayout";
 import DashboardPageCompany from "../pages/company/DashboardPage";
 import EmployeesPage from "../pages/company/EmployeesPage";
 import OffersPage from "../pages/company/OffersPage";
 import OfferFormPage from "../pages/company/OfferFormPage";
 
-//Employee
 import CanjeCupon from "../pages/employee/CanjeCupon";
+
+// Componente interno: redirige roles no-cliente fuera del home
+function HomeOrRedirect() {
+  const { session, role, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (session && role === "admin")            return <Navigate to="/admin/dashboard"  replace />;
+  if (session && role === "company_admin")    return <Navigate to="/company/dashboard" replace />;
+  if (session && role === "company_employee") return <Navigate to="/empleado/canje"   replace />;
+
+  // cliente autenticado o visitante anónimo → ve el home
+  return <Home />;
+}
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* ── Público + cliente ── */}
         <Route element={<Layout />}>
           {/* Home: accesible para todos sin excepción */}
           <Route path="/" element={<Home />} />
@@ -71,15 +74,12 @@ export default function AppRouter() {
           />
         </Route>
 
-        {/* ── Auth: solo sin sesión activa ── */}
         <Route path="/login"           element={<ProtectedRoute guestOnly><LogIn /></ProtectedRoute>} />
         <Route path="/signup"          element={<ProtectedRoute guestOnly><SignUp /></ProtectedRoute>} />
         <Route path="/forgot-password" element={<ProtectedRoute guestOnly><ForgotPassword /></ProtectedRoute>} />
 
-        {/* ── Reset password: siempre pública ── */}
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* ── Admin ── */}
         <Route
           path="/admin"
           element={
@@ -101,7 +101,6 @@ export default function AppRouter() {
           <Route path="*"                  element={<div>Página no encontrada</div>} />
         </Route>
 
-        {/* ── Company Admin ── */}
         <Route
           path="/company"
           element={
@@ -118,7 +117,6 @@ export default function AppRouter() {
           <Route path="employees"       element={<EmployeesPage />} />
         </Route>
 
-        {/* ── Empleado ── */}
         <Route
           path="/empleado/canje"
           element={
@@ -128,7 +126,6 @@ export default function AppRouter() {
           }
         />
 
-        {/* ── Fallback ── */}
         <Route path="*" element={<Navigate to="/" replace />} />
 
       </Routes>

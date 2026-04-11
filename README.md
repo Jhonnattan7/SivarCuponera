@@ -1,277 +1,148 @@
-# 🎟️ Sivar Cuponera
+# Sivar Cuponera
 
-Sistema web de venta de cupones de descuento desarrollado con React + Vite + Supabase + Tailwind CSS.
+Aplicación web para publicar, administrar y comprar cupones de descuento. Está construida con React, Vite y Supabase, y usa roles para separar el acceso de clientes, administradores, empresas y personal interno.
 
-## 📋 Descripción
+## Resumen
 
-Aplicación web que permite a clientes comprar cupones de descuento de empresas ofertantes. Los clientes pueden registrarse, buscar ofertas por rubro, comprar cupones y visualizar su historial de compras.
+La plataforma permite:
 
-## 🚀 Tecnologías
+- Navegar ofertas públicas por rubro y por búsqueda.
+- Comprar cupones desde un flujo de pago simulado.
+- Ver el historial de cupones comprados por cliente.
+- Administrar rubros, empresas, usuarios y ofertas desde el panel de administración.
+- Gestionar ofertas y empleados desde el panel de empresa.
+- Canjear cupones desde el rol de empleado.
 
-- **Frontend**: React 19 + Vite
-- **Backend**: Supabase (Backend as a Service)
-- **Estilos**: Tailwind CSS
-- **Autenticación**: Supabase Auth
-- **Base de datos**: PostgreSQL (Supabase)
+## Tecnologías
 
-## ⚙️ Instalación
+- React 19
+- Vite
+- React Router
+- Supabase Auth y PostgreSQL
+- Tailwind CSS 4
+- @supabase/supabase-js
 
-### 1. Clonar el repositorio
+## Requisitos
 
-```bash
-git clone <url-del-repositorio>
-cd SivarCuponera
+- Node.js 18 o superior
+- Una cuenta y un proyecto activo en Supabase
+- Variables de entorno configuradas en `.env.local`
+
+## Instalación
+
+1. Clona el repositorio.
+2. Instala dependencias con `npm install`.
+3. Crea o revisa el archivo `.env.local` en la raíz del proyecto con estas variables:
+
+```env
+VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+VITE_SUPABASE_ANON_KEY=tu_clave_anonima
 ```
 
-### 2. Instalar dependencias
+4. En Supabase, ejecuta las migraciones SQL ubicadas en `database/migrations/` en orden numérico.
+5. Inicia la aplicación con `npm run dev`.
 
-```bash
-npm install
+Si prefieres una referencia rápida del esquema final, revisa `supabase-schema.sql`.
+
+## Uso
+
+El proyecto corre por defecto en `http://localhost:5173`.
+
+Rutas principales:
+
+- `/` sitio público con ofertas.
+- `/login`, `/signup`, `/forgot-password` y `/reset-password` para autenticación.
+- `/client/coupons` para ver cupones del cliente.
+- `/pago-cupon` para completar la compra.
+- `/admin/*` para el panel de administración.
+- `/company/*` para el panel de empresa.
+- `/empleado/canje` para canje de cupones.
+
+## Roles
+
+- `admin`: acceso al panel global, gestión de rubros, empresas, clientes, admins de empresa y revisión de ofertas.
+- `company_admin`: acceso a su panel de empresa, ofertas y empleados.
+- `company_employee`: acceso al canje de cupones.
+- `client`: navegación pública, compra y visualización de cupones.
+
+## Funcionalidades principales
+
+- Home con hero, filtro por categorías y listado de ofertas.
+- Cards de oferta con imagen, descuento, precio original y precio promocional.
+- Compra de cupón con validación básica de tarjeta.
+- Generación de código de cupón después de la compra.
+- Panel de administrador con métricas financieras y revisión de ofertas pendientes.
+- CRUD de categorías y empresas.
+- Panel de empresa para gestionar ofertas y personal.
+
+## Estructura del proyecto
+
+```text
+src/
+├── components/
+│   ├── common/
+│   └── ui/
+├── context/
+├── pages/
+│   ├── admin/
+│   ├── client/
+│   ├── company/
+│   ├── employee/
+│   └── public/
+├── routes/
+├── services/
+└── utils/
+
+database/
+└── migrations/
 ```
 
-### 3. Configurar Supabase
+## Base de datos
 
-**Lee la guía completa en [SETUP-SUPABASE.md](SETUP-SUPABASE.md)**
+El proyecto usa Supabase como backend y organiza la lógica SQL en migraciones:
 
-Pasos rápidos:
-1. Crea un proyecto en [supabase.com](https://supabase.com)
-2. Copia `.env.example` a `.env.local` y agrega tus credenciales
-3. Ejecuta el script `supabase-schema.sql` en el SQL Editor de Supabase
+- `001_initial_schema.sql`: esquema base.
+- `002_views.sql`: vistas para ofertas activas y métricas.
+- `003_functions_and_triggers.sql`: funciones y triggers.
+- `004_row_level_security.sql`: políticas RLS.
+- `005_add_image_support.sql`: soporte para imágenes en ofertas.
+- `006_coupon_purchase_setup.sql`: compra de cupones.
+- `007_add_product_name.sql`: nombre de producto en cupones.
+- `008_seed_test_data.sql`: datos de prueba.
+- `010_storage_offer_images_rls.sql`: seguridad para storage.
 
-### 4. Ejecutar el proyecto
+## Scripts
 
 ```bash
 npm run dev
+npm run build
+npm run preview
+npm run lint
 ```
 
-La aplicación estará disponible en `http://localhost:5173`
+## Notas de configuración
 
-## 📁 Estructura del Proyecto
+- `src/services/supabaseClient.js` valida que existan `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
+- Si cambias el archivo `.env.local`, reinicia el servidor de desarrollo.
+- Las ofertas públicas dependen de las vistas y políticas creadas en Supabase.
 
-```
-src/
-├── components/          # Componentes React
-│   ├── LoginForm.jsx   # Ejemplo de autenticación
-│   └── ...
-├── context/            # Contextos de React
-│   └── AuthContext.jsx # Manejo de autenticación
-├── lib/                # Utilidades y configuración
-│   ├── supabase.js     # Cliente de Supabase
-│   └── api.js          # Funciones de API
-├── App.jsx             # Componente principal
-├── main.jsx            # Punto de entrada
-└── index.css           # Estilos globales
-```
+## Solución de problemas
 
-## 🎯 Funcionalidades - Fase 1
+Si no ves ofertas o el login falla, revisa lo siguiente:
 
-✅ **Completado:**
-- [x] Configuración de Supabase
-- [x] Sistema de autenticación
-- [x] Estructura de base de datos
+1. Que `.env.local` tenga credenciales válidas.
+2. Que las migraciones SQL se hayan ejecutado en Supabase.
+3. Que existan perfiles y roles creados en la tabla `profiles`.
+4. Que la oferta tenga estado válido y fechas activas.
 
-🔨 **En desarrollo:**
-- [ ] Mostrar ofertas por rubro
-- [ ] Registro y login de clientes
-- [ ] Compra de cupones
-- [ ] Visualización de cupones del cliente
+## Equipo de Desarrollo
 
-## 📚 Uso del Sistema
+1. Alexander Martinez - Autenticación y Configuracon de Subapase
+2. Napoleon Días - Frontend / Modulo Compra Cupon
+3. Marco Mazzini - Frontend / Modulo Admin Empresa
+4. Jhonnatan Peñate - Frontend / Modulo Administador Total y Documentación
+5. Jade Cárcamo - Frontend / Modulo de Cliente Mis Cupones y Canje Empleado
 
-### Sistema de Autenticación
+## Licencia
 
-```jsx
-import { useAuth } from './context/AuthContext'
-
-function MiComponente() {
-  const { user, cliente, iniciarSesion, cerrarSesion } = useAuth()
-  
-  // user: usuario de Supabase Auth
-  // cliente: datos completos del cliente (nombres, apellidos, etc.)
-}
-```
-
-### Obtener Ofertas
-
-```jsx
-import { obtenerOfertasActivas } from './lib/api'
-
-const resultado = await obtenerOfertasActivas()
-if (resultado.success) {
-  console.log(resultado.data) // Array de ofertas
-}
-```
-
-### Comprar Cupón
-
-```jsx
-import { comprarCupon } from './lib/api'
-
-const resultado = await comprarCupon(ofertaId, 'tarjeta_credito')
-if (resultado.success) {
-  console.log('Cupón:', resultado.data.codigo)
-}
-```
-
-Ver más ejemplos en [src/components/LoginForm.jsx](src/components/LoginForm.jsx)
-
-## 🗄️ Base de Datos
-
-### Tablas principales:
-- `rubros`: Categorías de ofertas
-- `empresas`: Empresas ofertantes
-- `ofertas`: Promociones con descuentos
-- `clientes`: Usuarios registrados
-- `cupones`: Cupones comprados
-
-### Esquema completo:
-Ver [supabase-schema.sql](supabase-schema.sql)
-
-## 🔐 Seguridad
-
-- Row Level Security (RLS) habilitado
-- Clientes solo pueden ver sus propios cupones
-- Ofertas públicas solo si están aprobadas
-- Autenticación mediante Supabase Auth
-
-## 📝 Scripts Disponibles
-
-```bash
-npm run dev       # Ejecutar en modo desarrollo
-npm run build     # Construir para producción
-npm run preview   # Vista previa de producción
-npm run lint      # Verificar errores de ESLint
-```
-
-## 🐛 Solución de Problemas
-
-### Error: Variables de entorno no encontradas
-- Verifica que `.env.local` existe
-- Las variables deben comenzar con `VITE_`
-- Reinicia el servidor (`npm run dev`)
-
-### No se muestran las ofertas
-- Verifica que ejecutaste el script SQL completo
-- Asegúrate de que existen ofertas con estado 'aprobada'
-- Revisa las fechas de inicio/fin de las ofertas
-
-## 👥 Equipo
-
-Proyecto desarrollado por [Nombre del equipo]
-
-## 📄 Licencia
-
-Este proyecto es parte de un trabajo académico.
-
----
-
-Para más información sobre la configuración de Supabase, consulta [SETUP-SUPABASE.md](SETUP-SUPABASE.md)
-
-```
-SivarCuponera
-├─ database
-│  ├─ migrations
-│  │  ├─ 001_initial_schema.sql
-│  │  ├─ 002_views.sql
-│  │  ├─ 003_functions_and_triggers.sql
-│  │  ├─ 004_row_level_security.sql
-│  │  ├─ 005_add_image_support.sql
-│  │  ├─ 006_coupon_purchase_setup.sql
-│  │  ├─ 007_add_product_name.sql
-│  │  ├─ 008_seed_test_data.sql
-│  │  ├─ 010_storage_offer_images_rls.sql
-│  │  └─ README.md
-│  └─ README.md
-├─ eslint.config.js
-├─ index.html
-├─ package-lock.json
-├─ package.json
-├─ public
-│  ├─ img
-│  │  ├─ cafe.jpg
-│  │  ├─ gorras.jpg
-│  │  ├─ MAC.jpg
-│  │  ├─ mascotas.jpg
-│  │  ├─ radio.webp
-│  │  └─ zapatosSportline.png
-│  └─ vite.svg
-├─ README.md
-├─ src
-│  ├─ App.css
-│  ├─ App.jsx
-│  ├─ assets
-│  │  └─ react.svg
-│  ├─ components
-│  │  ├─ common
-│  │  │  ├─ Footer.jsx
-│  │  │  ├─ info.txt
-│  │  │  └─ PopupFooter.jsx
-│  │  └─ ui
-│  │     ├─ CuponCard.jsx
-│  │     ├─ Header.jsx
-│  │     ├─ Hero.jsx
-│  │     ├─ info.txt
-│  │     ├─ Layout.jsx
-│  │     ├─ OfertaCard.jsx
-│  │     ├─ OfertasCuadricula.jsx
-│  │     └─ Sidebar.jsx
-│  ├─ context
-│  │  └─ AuthContext.jsx
-│  ├─ hooks
-│  │  └─ info.txt
-│  ├─ index.css
-│  ├─ main.jsx
-│  ├─ pages
-│  │  ├─ admin
-│  │  │  ├─ AdminLayout.jsx
-│  │  │  ├─ CategoriesPage.jsx
-│  │  │  ├─ ClientsPage.jsx
-│  │  │  ├─ CompaniesPage.jsx
-│  │  │  ├─ CompanyAdminsPage.jsx
-│  │  │  ├─ CompanyDetailPage.jsx
-│  │  │  ├─ CompanyFormPage.jsx
-│  │  │  ├─ DashboardPage.jsx
-│  │  │  ├─ info.txt
-│  │  │  └─ OffersReviewPage.jsx
-│  │  ├─ client
-│  │  │  ├─ info.txt
-│  │  │  ├─ MisCupones.jsx
-│  │  │  ├─ MisCuponesComprados.jsx
-│  │  │  └─ PagoCupon.jsx
-│  │  ├─ company
-│  │  │  ├─ CompanyLayout.jsx
-│  │  │  ├─ DashboardPage.jsx
-│  │  │  ├─ EmployeesPage.jsx
-│  │  │  ├─ info.txt
-│  │  │  ├─ OfferFormPage.jsx
-│  │  │  └─ OffersPage.jsx
-│  │  ├─ employee
-│  │  │  ├─ CanjeCupon.jsx
-│  │  │  └─ info.txt
-│  │  └─ public
-│  │     ├─ ForgotPassword.jsx
-│  │     ├─ Home.jsx
-│  │     ├─ info.txt
-│  │     ├─ LogIn.jsx
-│  │     ├─ ResetPassword.jsx
-│  │     └─ SignUp.jsx
-│  ├─ routes
-│  │  ├─ AppRouter.jsx
-│  │  └─ ProtectedRoute.jsx
-│  ├─ services
-│  │  ├─ adminService.js
-│  │  ├─ authService.js
-│  │  ├─ categoriesService.js
-│  │  ├─ companiesService.js
-│  │  ├─ employeesService.js
-│  │  ├─ info.txt
-│  │  ├─ offersService.js
-│  │  ├─ statsService.js
-│  │  └─ supabaseClient.js
-│  └─ utils
-│     ├─ api.js
-│     └─ info.txt
-├─ supabase-schema.sql
-└─ vite.config.js
-
-```
+Este proyecto corresponde a un trabajo académico para la materia de Desarrollo Web ll.

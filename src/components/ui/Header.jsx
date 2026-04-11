@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../services/supabaseClient'
 
 export default function Header() {
-  const { session, profile } = useAuth() // Usamos el contexto global
+  const { session, profile } = useAuth()
   const [menuAbierto, setMenuAbierto] = useState(false)
   const navigate = useNavigate()
 
@@ -14,30 +14,25 @@ export default function Header() {
     navigate('/login')
   }
 
-  // Helper para mostrar nombre o email
   const displayName = profile?.first_name || session?.user?.email || "Usuario"
 
   return (
     <header className="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
       <nav className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <span className="text-2xl font-bold tracking-tight">
               Sivar<span className="text-cyan-400">Cuponera</span>
             </span>
           </Link>
 
-          {/* Menú Desktop */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="hover:text-cyan-400 transition font-medium">
               Ofertas
             </Link>
 
             {session ? (
-              // USUARIO LOGUEADO
               <div className="flex items-center space-x-4">
-                {/* Links según rol */}
                 {profile?.role === 'client' && (
                   <Link to="/client/coupons" className="hover:text-cyan-400 font-medium">
                     Mis Cupones
@@ -72,7 +67,6 @@ export default function Header() {
                 </div>
               </div>
             ) : (
-              // USUARIO INVITADO
               <div className="flex items-center space-x-3">
                 <Link
                   to="/login"
@@ -90,7 +84,6 @@ export default function Header() {
             )}
           </div>
 
-          {/* Botón Menú Móvil */}
           <button
             onClick={() => setMenuAbierto(!menuAbierto)}
             className="md:hidden p-2 text-slate-300 hover:text-white"
@@ -105,7 +98,6 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Menú Móvil Desplegable */}
         {menuAbierto && (
           <div className="md:hidden mt-4 pb-4 space-y-3 border-t border-slate-700 pt-4">
             <Link to="/" className="block py-2 hover:text-cyan-400" onClick={() => setMenuAbierto(false)}>

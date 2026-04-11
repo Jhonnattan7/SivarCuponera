@@ -6,13 +6,12 @@ import { useAuth } from '../../context/AuthContext'
 export default function CanjeCupon() {
   const { profile } = useAuth()
   const [codigo, setCodigo] = useState('')
-  const [email, setEmail] = useState('')
+  const [dui, setDui] = useState('')
   const [loading, setLoading] = useState(false)
   const [mensaje, setMensaje] = useState(null)
   const [error, setError] = useState(null)
   const [nombreEmpresa, setNombreEmpresa] = useState('')
 
-  // Extraemos el nombre de la empresa al cargar el panel
   useEffect(() => {
     const fetchEmpresa = async () => {
       if (profile?.company_id) {
@@ -37,32 +36,46 @@ export default function CanjeCupon() {
     setMensaje(null)
 
     try {
-      if (!codigo || !email) {
-        throw new Error('Por favor, ingresa el código del cupón y el correo del cliente.')
+      if (!codigo || !dui) {
+        throw new Error('Por favor, ingresa el código del cupón y el DUI del cliente.')
       }
 
-      // Consultar el cupón según el código y el email
+      const { data: cliente } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('dui', dui.trim())
+        .maybeSingle()
+
+      if (!cliente) {
+        throw new Error('No se encontró ningún cliente registrado con este DUI.')
+      }
+
       const { data, error: fetchError } = await supabase
         .from('coupons')
         .select('*')
-        .eq('code', codigo.trim())
-        .eq('client_email', email.trim().toLowerCase())
-        .single()
+        .ilike('code', codigo.trim())
+        .maybeSingle()
 
-      if (fetchError || !data) {
-        throw new Error('Cupón no encontrado o el correo no coincide.')
+      if (!data) {
+        throw new Error('El código de cupón no existe o no pertenece a tu empresa.')
       }
 
-      // Verificar que el cupón esté vigente (active, disponible o available)
+      if (data.client_id !== cliente.id) {
+        throw new Error('El cupón es válido, pero no le pertenece al cliente con este DUI.')
+      }
+
       const estadoActual = data.status?.toLowerCase()
-      if (estadoActual !== 'vigente' && estadoActual !== 'active' && estadoActual !== 'available') {
+      if (estadoActual !== 'vigente' && estadoActual !== 'available') {
         throw new Error(`Este cupón no puede ser canjeado. Estado actual: ${data.status.toUpperCase()}`)
       }
 
-      // Actualizar a "redeemed" y registrar fecha de canje
       const { error: updateError } = await supabase
         .from('coupons')
-        .update({ status: 'redeemed', redeemed_at: new Date().toISOString() })
+        .update({ 
+          status: 'redeemed', 
+          redeemed_at: new Date().toISOString(),
+          redeemed_by: profile?.id 
+        })
         .eq('id', data.id)
 
       if (updateError) {
@@ -71,7 +84,7 @@ export default function CanjeCupon() {
 
       setMensaje('¡El cupón ha sido canjeado exitosamente!')
       setCodigo('')
-      setEmail('')
+      setDui('')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -98,12 +111,12 @@ export default function CanjeCupon() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Correo del Cliente</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Ej. cliente@correo.com" className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" />
+              <label className="block text-sm font-medium text-slate-700 mb-1">DUI del Cliente</label>
+              <input type="text" value={dui} onChange={(e) => setDui(e.target.value)} placeholder="Ej. 12345678-9" className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none" />
             </div>
 
             <button type="submit" disabled={loading} className="w-full mt-4 py-3 px-4 bg-primary text-white font-bold rounded-lg shadow hover:bg-opacity-90 transition-colors disabled:opacity-70">
-              {loading ? 'Validando...' : 'Canjear Cupón'}
+              {loading ? 'Validando...' : 'Validar y Canjear'}
             </button>
           </form>
         </div>
