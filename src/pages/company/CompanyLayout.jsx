@@ -17,6 +17,9 @@ export default function CompanyLayout() {
             <aside className="w-full md:w-64 bg-slate-800 text-white flex-shrink-0 flex flex-col h-screen sticky top-0">
                 <div className="p-6 border-b border-slate-700">
                     <h2 className="text-xl font-bold">Panel Empresa</h2>
+                    {profile?.companies?.name && (
+                        <p className="text-xs font-bold text-emerald-500 uppercase tracking-wider mb-1">{profile.companies.name}</p>
+                    )}
                     <p className="text-sm text-slate-400 mt-1">
                         Hola, {profile?.first_name || "Admin de Empresa"}
                     </p>

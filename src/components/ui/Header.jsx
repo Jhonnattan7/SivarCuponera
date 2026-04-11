@@ -53,6 +53,11 @@ export default function Header() {
                     Panel Empresa
                   </Link>
                 )}
+                {profile?.role === 'company_employee' && (
+                  <Link to="/empleado/canje" className="text-emerald-400 hover:text-white font-bold border border-emerald-400 px-3 py-1 rounded hover:bg-emerald-600 hover:border-transparent transition">
+                    Canjear Cupón
+                  </Link>
+                )}
 
                 <div className="flex items-center space-x-3 pl-4 border-l border-slate-700">
                   <span className="text-sm text-slate-300">
@@ -122,6 +127,11 @@ export default function Header() {
                 {profile?.role === 'company_admin' && (
                   <Link to="/company" className="block py-2 text-emerald-400 font-bold" onClick={() => setMenuAbierto(false)}>
                     Ir al Panel Empresa
+                  </Link>
+                )}
+                {profile?.role === 'company_employee' && (
+                  <Link to="/empleado/canje" className="block py-2 text-emerald-400 font-bold" onClick={() => setMenuAbierto(false)}>
+                    Canjear Cupón
                   </Link>
                 )}
                 <div className="pt-4 border-t border-slate-700">

@@ -14,7 +14,7 @@ import ForgotPassword from "../pages/public/ForgotPassword";
 import ResetPassword from "../pages/public/ResetPassword";
 
 //Client
-import MisCupones from "../pages/client/MisCupones";
+import MisCuponesComprados from "../pages/client/MisCuponesComprados";
 import PagoCupon from "../pages/client/PagoCupon";
 // import ClientSettings from "../pages/client/ClientSettings";
 
@@ -34,8 +34,7 @@ import OffersPage from "../pages/company/OffersPage";
 import OfferFormPage from "../pages/company/OfferFormPage";
 
 //Employee
-// import EmployeeLayout from "../pages/employee/EmployeeLayout";
-// import RedeemPage from "../pages/employee/RedeemPage";
+import CanjeCupon from "../pages/employee/CanjeCupon";
 
 
 export default function AppRouter() {
@@ -52,7 +51,7 @@ export default function AppRouter() {
             path="/client/coupons"
             element={
               <ProtectedRoute allowedRoles={["client"]}>
-                <MisCupones />
+                <MisCuponesComprados />
               </ProtectedRoute>
             }
           />
@@ -120,17 +119,13 @@ export default function AppRouter() {
 
         {/* ── Empleado ── */}
         <Route
-          path="/employee"
+          path="/empleado/canje"
           element={
             <ProtectedRoute allowedRoles={["company_employee"]}>
-              <div>Panel Empleado (En construcción)</div>
-              {/* <EmployeeLayout /> */}
+              <CanjeCupon />
             </ProtectedRoute>
           }
-        >
-          {/* <Route index element={<Navigate to="redeem" replace />} />
-          <Route path="redeem"   element={<RedeemPage />} /> */}
-        </Route>
+        />
 
         {/* ── Fallback ── */}
         <Route path="*" element={<Navigate to="/" replace />} />
