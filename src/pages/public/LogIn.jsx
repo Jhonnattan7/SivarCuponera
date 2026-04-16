@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { login } from "../../services/authService";
-import { useAuth } from "../../context/AuthContext";
-
-const redirectMap = {
-    admin: "/admin/dashboard",
-    company_admin: "/company/dashboard",
-    company_employee: "/empleado/canje",
-    client: "/",
-};
+import { getRoleRedirectPath } from "../../routes/roleRedirect";
 
 export default function LogIn() {
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -18,7 +11,6 @@ export default function LogIn() {
     const navigate = useNavigate();
     const location = useLocation();
     const successMessage = location.state?.message;
-    const { profile } = useAuth();
 
     const getLoginErrorMessage = (err) => {
         const message = err?.message?.toLowerCase?.() || "";
@@ -61,7 +53,7 @@ export default function LogIn() {
             const result = await login(formData.email, formData.password);
             const userProfile = result.profile;
             const from = location.state?.from?.pathname;
-            navigate(from ?? redirectMap[userProfile?.role] ?? "/", { replace: true });
+            navigate(from ?? getRoleRedirectPath(userProfile?.role), { replace: true });
         } catch (err) {
             console.error(err);
             setError(getLoginErrorMessage(err));

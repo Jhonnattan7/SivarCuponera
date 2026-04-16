@@ -110,6 +110,7 @@ El proyecto usa Supabase como backend y organiza la lógica SQL en migraciones:
 - `007_add_product_name.sql`: nombre de producto en cupones.
 - `008_seed_test_data.sql`: datos de prueba.
 - `010_storage_offer_images_rls.sql`: seguridad para storage.
+- `011_rls_alignment_and_view_security.sql`: alineación de políticas RLS y seguridad de vistas.
 
 ## Scripts
 

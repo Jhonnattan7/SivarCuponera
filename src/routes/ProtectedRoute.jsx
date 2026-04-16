@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { getRoleRedirectPath } from "./roleRedirect";
 
 /**
  * Props:
@@ -20,7 +21,9 @@ export default function ProtectedRoute({
 
   // Rutas de invitado: si hay sesión activa, siempre al home
   if (guestOnly) {
-    if (session) return <Navigate to="/" replace />;
+    if (session) {
+      return <Navigate to={getRoleRedirectPath(role)} replace />;
+    }
     return children;
   }
 

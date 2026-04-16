@@ -56,6 +56,10 @@ export default function CanjeCupon() {
         .ilike('code', codigo.trim())
         .maybeSingle()
 
+      if (fetchError) {
+        throw new Error('No se pudo consultar el cupón. Intenta nuevamente.')
+      }
+
       if (!data) {
         throw new Error('El código de cupón no existe o no pertenece a tu empresa.')
       }
@@ -64,8 +68,8 @@ export default function CanjeCupon() {
         throw new Error('El cupón es válido, pero no le pertenece al cliente con este DUI.')
       }
 
-      const estadoActual = data.status?.toLowerCase()
-      if (estadoActual !== 'vigente' && estadoActual !== 'available') {
+      const estadoActual = (data.status || '').toLowerCase()
+      if (estadoActual !== 'available') {
         throw new Error(`Este cupón no puede ser canjeado. Estado actual: ${data.status.toUpperCase()}`)
       }
 

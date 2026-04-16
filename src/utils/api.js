@@ -70,12 +70,23 @@ export const comprarCupon = async (offerId, datosCupon = {}) => {
     const { data, error } = await supabase.rpc('purchase_coupon', { p_offer_id: offerId })
     if (error) throw error
 
+    const rpcRow = Array.isArray(data) ? data[0] : data
+    const codigo = typeof rpcRow === 'string' ? rpcRow : (rpcRow?.codigo ?? null)
+    const correo = typeof rpcRow === 'object' && rpcRow !== null ? (rpcRow.correo ?? null) : null
+    const transactionAt = typeof rpcRow === 'object' && rpcRow !== null
+      ? (rpcRow.transaction_at ?? rpcRow.transactionAt ?? null)
+      : null
+
+    if (!codigo) {
+      return { success: false, error: 'No se pudo generar el código del cupón.' }
+    }
+
     // Enviar correo (no bloquea la compra si falla)
     try {
       await supabase.functions.invoke('send-coupon-email', {
         body: {
-          email: user.email,
-          codigo: data,
+          email: correo || user.email,
+          codigo,
           titulo: datosCupon.titulo || 'Oferta',
           empresa: datosCupon.empresa || 'Empresa',
           precio: datosCupon.precio || '0.00',
@@ -85,7 +96,7 @@ export const comprarCupon = async (offerId, datosCupon = {}) => {
       console.warn('Correo no enviado:', e)
     }
 
-    return { success: true, data: { codigo: data } }
+    return { success: true, data: { codigo, correo, transactionAt } }
   } catch (error) {
     console.error('Error en comprarCupon:', error)
     return { success: false, error: error.message }

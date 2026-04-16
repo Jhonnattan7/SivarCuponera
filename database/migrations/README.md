@@ -65,19 +65,20 @@ Las migraciones se ejecutan en orden numérico. Cada archivo contiene una fase e
 - **Dependencias**: Requiere `005_add_image_support.sql`
 - **Nota**: Usar con cuidado - contiene datos transitorios de prueba
 
-### 009_fix_client_coupon_visibility.sql
-**Descripción**: Corrige visibilidad de cupones para cuentas cliente
-- Agrega política `offers_client_coupon_related_select`
-- Agrega política `companies_client_coupon_related_select`
-- Permite resolver joins `coupons -> offers -> companies` solo para cupones propios
-- **Dependencias**: Requiere `004_row_level_security.sql`
-
 ### 010_storage_offer_images_rls.sql
 **Descripción**: Configuración de Storage para imágenes de ofertas
 - Crea/actualiza bucket `offers-images` (público, 5 MB, MIME restringidos)
 - Agrega políticas RLS en `storage.objects` para `company_admin`
 - Restringe escritura por carpeta con prefijo `company_id/`
 - **Dependencias**: Requiere `003_functions_and_triggers.sql` (usa `get_user_role()` y `get_user_company_id()`)
+
+### 011_rls_alignment_and_view_security.sql
+**Descripción**: Alineación de RLS y seguridad de vistas
+- Añade políticas faltantes en `profiles` para registro cliente y gestión de empleados por `company_admin`
+- Añade política pública `offers_public_read_active` para lectura mínima de ofertas activas
+- Configura `security_invoker` en vistas (`active_offers`, `offer_financials`, `companies_public`)
+- Ajusta `search_path` en funciones críticas
+- **Dependencias**: Requiere `010_storage_offer_images_rls.sql`
 
 ## Orden de Ejecución Requerido
 
@@ -90,8 +91,8 @@ Las migraciones se ejecutan en orden numérico. Cada archivo contiene una fase e
 6. 006_coupon_purchase_setup.sql
 7. 007_add_product_name.sql
 8. 008_seed_test_data.sql (OPCIONAL - solo para desarrollo/prueba)
-9. 009_fix_client_coupon_visibility.sql
-10. 010_storage_offer_images_rls.sql
+9. 010_storage_offer_images_rls.sql
+10. 011_rls_alignment_and_view_security.sql
 ```
 
 ## Cómo Aplicar las Migraciones
@@ -186,15 +187,17 @@ DROP TABLE IF EXISTS table_name CASCADE;
 
 ## Cambios Recientes
 
-### v9 (Actual)
-- Fix de visibilidad de cupones para usuarios cliente
-- Políticas de lectura limitada para offers/companies relacionadas con cupones propios
+### v11 (Actual)
+- Alineación de políticas RLS de `profiles` con el esquema consolidado
+- Política pública mínima para ofertas activas (`offers_public_read_active`)
+- Vistas configuradas con `security_invoker = true`
+- Endurecimiento de funciones con `search_path = public`
 
-### v10 (Actual)
+### v10
 - Configuración de bucket y políticas RLS para subida de imágenes de ofertas por empresa
 - Control de acceso por rol y carpeta `company_id/`
 
-### v8 (Actual)
+### v8
 - Migraciones organizadas en carpeta `database/migrations/`
 - Separación de concerns: schema, views, functions, RLS, features, data
 - Documentación completa de dependencias
@@ -211,7 +214,7 @@ DROP TABLE IF EXISTS table_name CASCADE;
 ## Contribuciones
 
 Cuando añadas nuevas migraciones:
-1. Asigna número secuencial siguiente (ej: `009_feature_name.sql`)
+1. Asigna número secuencial siguiente (ej: `012_feature_name.sql`)
 2. Documenta dependencias en este README
 3. Incluye comentarios de cabecera explicando el propósito
 4. Usa `ON CONFLICT DO NOTHING` para idempotencia cuando sea posible

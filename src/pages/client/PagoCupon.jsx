@@ -112,7 +112,7 @@ export default function PagoCupon() {
       }
 
       setCodigoGenerado(compra.data.codigo)
-      setTransactionAt(new Date().toISOString())
+      setTransactionAt(compra.data.transactionAt || new Date().toISOString())
       setUserEmail(userData?.user?.email || '')
       setForm(initialForm)
     } catch (err) {
