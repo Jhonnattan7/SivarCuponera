@@ -1,10 +1,15 @@
 function CuponCard({ cupon }) {
-    const oferta = cupon?.Cupones || {}
-    const titulo = oferta.titulo || 'Cupón'
-    const tienda = oferta.Tienda || 'Tienda'
-    const descripcion = oferta.descripcion || 'Sin descripción disponible'
-    const imageSrc = oferta.imagen
-        ? (oferta.imagen.startsWith('http') ? oferta.imagen : `/img/${oferta.imagen}`)
+    const legacyOffer = cupon?.Cupones || {}
+    const offer = cupon?.offer || legacyOffer
+
+    const titulo = offer.title || offer.titulo || 'Cupón'
+    const tienda = offer.companyName || offer.Tienda || 'Tienda'
+    const descripcion = offer.description || offer.descripcion || 'Sin descripción disponible'
+    const image = offer.image || offer.imagen
+    const expiryDate = offer.expiryDate || offer.fecha_fin
+
+    const imageSrc = image
+        ? (image.startsWith('http') ? image : `/img/${image}`)
         : null
     const estado = (cupon?.estado || '').toString().trim().toLowerCase()
 
@@ -57,7 +62,7 @@ function CuponCard({ cupon }) {
                 <p className="text-sm text-slate-500 text-center">
                     Válido hasta el{' '}
                     <span className="font-semibold text-slate-700">
-                        {oferta.fecha_fin ? new Date(oferta.fecha_fin).toLocaleDateString('es-ES') : 'N/D'}
+                        {expiryDate ? new Date(expiryDate).toLocaleDateString('es-ES') : 'N/D'}
                     </span>
                 </p>
             </div>

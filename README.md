@@ -127,6 +127,66 @@ npm run lint
 - Si cambias el archivo `.env.local`, reinicia el servidor de desarrollo.
 - Las ofertas públicas dependen de las vistas y políticas creadas en Supabase.
 
+## Configuración SMTP para Demo (Supabase + Gmail)
+
+Este proyecto puede enviar correos de autenticación (confirmación, recuperación y enlaces mágicos) directamente desde Supabase Auth sin backend propio adicional.
+
+Pasos recomendados para demo académica:
+
+1. Crea una cuenta Gmail exclusiva para el proyecto (ejemplo: lacuponera.demo@gmail.com).
+2. Activa verificación en dos pasos en esa cuenta.
+3. Genera una contraseña de aplicación en Google (App Password).
+4. En Supabase Dashboard entra a Authentication > Email > SMTP Settings.
+5. Configura estos valores:
+	- Host: smtp.gmail.com
+	- Port: 587
+	- Username: correo Gmail de la demo
+	- Password: App Password generada en Google
+	- Sender name: Sivar Cuponera
+	- Sender email: mismo correo Gmail de la demo
+6. Guarda y ejecuta una prueba de correo desde Supabase.
+7. En Authentication > URL Configuration, define correctamente:
+	- Site URL (tu frontend)
+	- Redirect URLs (incluye /reset-password y las URLs de despliegue)
+
+Notas:
+
+- Para demo, Gmail SMTP es suficiente.
+- Para producción, se recomienda dominio propio y proveedor transaccional (Resend, SendGrid, Brevo, Postmark).
+- No guardes secretos SMTP en el frontend ni en variables VITE_.
+
+## Flujo de Usuarios Internos (Admin y Empleados)
+
+Estado actual del repositorio:
+
+- Ya funciona el registro de clientes desde frontend.
+- La creación de usuarios internos aún usa signUp desde frontend (debe migrarse para seguridad de producción).
+
+Flujo objetivo recomendado:
+
+1. Admin invita a company_admin por correo (sin contraseña inicial).
+2. Company_admin invita a empleados por correo (sin contraseña inicial).
+3. Supabase envía enlace seguro de activación.
+4. El usuario define su propia contraseña desde el enlace.
+5. Se crea o activa su perfil con rol y empresa.
+
+Importante:
+
+- En frontend no se debe crear contraseña para usuarios internos.
+- Las invitaciones internas deben hacerse con una operación privilegiada (Edge Function con service role), no con anon key.
+
+## Qué cambiar para completar Fase 4
+
+1. Reemplazar la creación interna por contraseña en:
+	- src/services/authService.js (funciones createEmployee y createCompanyAdmin)
+	- src/pages/company/EmployeesPage.jsx (eliminar campo contraseña)
+	- src/pages/admin/CompanyAdminsPage.jsx (eliminar campo contraseña)
+2. Crear una Edge Function de invitación interna con validación por rol:
+	- admin puede invitar company_admin y company_employee
+	- company_admin solo puede invitar company_employee de su misma company_id
+3. Hacer que el frontend llame esa Edge Function en lugar de auth.signUp.
+4. Mantener reset de contraseña con Supabase (ya soportado en este proyecto).
+
 ## Solución de problemas
 
 Si no ves ofertas o el login falla, revisa lo siguiente:

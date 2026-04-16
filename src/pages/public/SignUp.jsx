@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signup } from "../../services/authService";
+import {
+  isMinLength,
+  isRequired,
+  isValidDui,
+  isValidEmail,
+  isValidPhoneSv,
+} from "../../utils/validation";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -27,45 +34,45 @@ export default function SignUp() {
     const newErrors = {};
 
     // Validar Nombres
-    if (!formData.firstName.trim()) {
+    if (!isRequired(formData.firstName)) {
       newErrors.firstName = "El nombre es obligatorio";
     }
 
     // Validar Apellidos
-    if (!formData.lastName.trim()) {
+    if (!isRequired(formData.lastName)) {
       newErrors.lastName = "El apellido es obligatorio";
     }
 
     // Validar Teléfono (Presencia + Formato 0000-0000)
-    if (!formData.phone.trim()) {
+    if (!isRequired(formData.phone)) {
       newErrors.phone = "El teléfono es obligatorio";
-    } else if (!/^\d{4}-\d{4}$/.test(formData.phone)) {
+    } else if (!isValidPhoneSv(formData.phone)) {
       newErrors.phone = "Formato inválido. Use: 7777-7777";
     }
 
     // Validar DUI (Presencia + Formato 00000000-0)
-    if (!formData.dui.trim()) {
+    if (!isRequired(formData.dui)) {
       newErrors.dui = "El DUI es obligatorio.";
-    } else if (!/^\d{8}-\d$/.test(formData.dui)) {
+    } else if (!isValidDui(formData.dui)) {
       newErrors.dui = "Formato inválido. Use: 00000000-0";
     }
 
     // Validar Correo
-    if (!formData.email.trim()) {
+    if (!isRequired(formData.email)) {
       newErrors.email = "El correo electrónico es obligatorio.";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    } else if (!isValidEmail(formData.email)) {
       newErrors.email = "Ingresa un correo electrónico válido.";
     }
 
     // Validar Dirección
-    if (!formData.address.trim()) {
+    if (!isRequired(formData.address)) {
       newErrors.address = "La dirección de residencia es obligatoria.";
     }
 
     // Validar Contraseña
-    if (!formData.password) {
+    if (!isRequired(formData.password)) {
       newErrors.password = "La contraseña es obligatoria.";
-    } else if (formData.password.length < 6) {
+    } else if (!isMinLength(formData.password, 6)) {
       newErrors.password = "La contraseña debe tener al menos 6 caracteres.";
     }
 

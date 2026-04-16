@@ -100,12 +100,14 @@ export default function MisCuponesComprados() {
       if (error) throw error
 
       const cuponesObtenidos = data || []
-      
-      
-      const companyIds = [...new Set(cuponesObtenidos.map(c => {
-        const offer = Array.isArray(c.offers) ? c.offers[0] : (c.offers || {});
-        return offer.company_id;
-      }).filter(Boolean))]
+      const companyIds = [...new Set(
+        cuponesObtenidos
+          .map((c) => {
+            const offer = Array.isArray(c.offers) ? c.offers[0] : (c.offers || {})
+            return offer.company_id
+          })
+          .filter(Boolean)
+      )]
 
       let mapaEmpresas = {}
       if (companyIds.length > 0) {
@@ -121,10 +123,16 @@ export default function MisCuponesComprados() {
         }
       }
 
-      const cuponesFinales = cuponesObtenidos.map(cupon => {
-        const offer = Array.isArray(cupon.offers) ? cupon.offers[0] : (cupon.offers || {});
-        const cid = offer.company_id ? String(offer.company_id) : null;
-        return { ...cupon, offers: { ...offer, companies: { name: mapaEmpresas[cid] || 'Empresa Asociada' } } };
+      const cuponesFinales = cuponesObtenidos.map((cupon) => {
+        const offer = Array.isArray(cupon.offers) ? cupon.offers[0] : (cupon.offers || {})
+        const cid = offer.company_id ? String(offer.company_id) : null
+        return {
+          ...cupon,
+          offer: {
+            ...offer,
+            companies: { name: mapaEmpresas[cid] || 'Empresa Asociada' },
+          },
+        }
       })
 
       setCupones(cuponesFinales)
@@ -164,19 +172,19 @@ export default function MisCuponesComprados() {
               cupon={{
                 estado: normalizarEstado(cupon.status),
                 codigo_cupon: cupon.code,
-                Cupones: { 
-                  titulo: cupon.offers?.title,
-                  imagen: cupon.offers?.IMG,
-                  Tienda: cupon.offers?.companies?.name || 'Empresa Asociada',
-                  descripcion: cupon.offers?.description,
-                  fecha_fin: cupon.offers?.coupon_expiry_date || cupon.offers?.end_date,
+                offer: {
+                  title: cupon.offer?.title,
+                  image: cupon.offer?.image_url,
+                  companyName: cupon.offer?.companies?.name || 'Empresa Asociada',
+                  description: cupon.offer?.description,
+                  expiryDate: cupon.offer?.coupon_expiry_date || cupon.offer?.end_date,
                 },
               }}
             />
             {normalizarEstado(cupon.status) === 'vigente' && (
               <div className="mt-4">
                 <PDFDownloadLink
-                  document={<CuponDocument cupon={cupon} oferta={cupon.offers || {}} />}
+                  document={<CuponDocument cupon={cupon} oferta={cupon.offer || {}} />}
                   fileName={`cupon-${cupon.code}.pdf`}
                   className="w-full inline-block text-center px-6 py-2 bg-primary text-white rounded-lg text-sm font-semibold"
                 >

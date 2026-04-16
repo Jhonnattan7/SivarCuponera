@@ -18,7 +18,6 @@ export default function EmployeesPage() {
         firstName: "",
         lastName: "",
         email: "",
-        password: "",
     });
 
     useEffect(() => {
@@ -53,9 +52,9 @@ export default function EmployeesPage() {
                 ...formData,
                 companyId: profile.company_id,
             });
-            setSuccessMsg("Empleado creado exitosamente. Es posible que debas iniciar sesión nuevamente si tu sesión se cerró.");
+            setSuccessMsg("Empleado creado. Se envio correo de activacion para definir contrasena.");
             setShowModal(false);
-            setFormData({ firstName: "", lastName: "", email: "", password: "" });
+            setFormData({ firstName: "", lastName: "", email: "" });
             loadEmployees();
         } catch (error) {
             console.error(error);
@@ -136,8 +135,8 @@ export default function EmployeesPage() {
             )}
 
             {showModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
+                <div className="fixed inset-0 flex items-center justify-center bg-slate-900/30 backdrop-blur-sm z-50 p-4">
+                    <div className="bg-white p-6 rounded-xl shadow-xl border border-slate-200 w-full max-w-md">
                         <h2 className="text-xl font-bold mb-4">Agregar Empleado</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
@@ -173,20 +172,8 @@ export default function EmployeesPage() {
                                     required
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium">Contraseña</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    className="w-full border p-2 rounded"
-                                    required
-                                    minLength="6"
-                                />
-                            </div>
-                            <p className="text-xs text-slate-500">
-                                Añade a un empleado
+                            <p className="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded p-2">
+                                Se enviara un correo de activacion para que el empleado cree su contrasena.
                             </p>
                             <div className="flex justify-end gap-2 mt-4">
                                 <button
@@ -198,7 +185,7 @@ export default function EmployeesPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="bg-primary text-white px-4 py-2 rounded"
+                                    className="bg-primary text-white px-4 py-2 rounded hover:opacity-90"
                                 >
                                     Guardar
                                 </button>

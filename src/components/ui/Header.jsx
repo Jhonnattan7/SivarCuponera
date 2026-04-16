@@ -49,7 +49,7 @@ export default function Header() {
                   </Link>
                 )}
                 {profile?.role === 'company_employee' && (
-                  <Link to="/empleado/canje" className="text-emerald-400 hover:text-white font-bold border border-emerald-400 px-3 py-1 rounded hover:bg-emerald-600 hover:border-transparent transition">
+                  <Link to="/empleado/canje" className="text-cyan-400 hover:text-white font-bold border border-cyan-400 px-3 py-1 rounded hover:bg-cyan-600 hover:border-transparent transition">
                     Canjear Cupón
                   </Link>
                 )}
@@ -122,7 +122,7 @@ export default function Header() {
                   </Link>
                 )}
                 {profile?.role === 'company_employee' && (
-                  <Link to="/empleado/canje" className="block py-2 text-emerald-400 font-bold" onClick={() => setMenuAbierto(false)}>
+                  <Link to="/empleado/canje" className="block py-2 text-cyan-400 font-bold" onClick={() => setMenuAbierto(false)}>
                     Canjear Cupón
                   </Link>
                 )}

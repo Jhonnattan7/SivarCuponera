@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { login } from "../../services/authService";
 import { getRoleRedirectPath } from "../../routes/roleRedirect";
+import { isRequired, isValidEmail } from "../../utils/validation";
 
 export default function LogIn() {
     const [formData, setFormData] = useState({ email: "", password: "" });
@@ -37,13 +38,12 @@ export default function LogIn() {
         e.preventDefault();
         setError(null);
 
-        if (!formData.email.trim() || !formData.password) {
+        if (!isRequired(formData.email) || !isRequired(formData.password)) {
             setError("Por favor, completa todos los campos.");
             return;
         }
 
-        const emailRegex = /\S+@\S+\.\S+/;
-        if (!emailRegex.test(formData.email)) {
+        if (!isValidEmail(formData.email)) {
             setError("Ingresa un correo electrónico válido.");
             return;
         }

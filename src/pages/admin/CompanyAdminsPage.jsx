@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { getCompanies } from "../../services/companiesService";
 import { createCompanyAdmin } from "../../services/authService";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import FeedbackMessage from "../../components/common/FeedbackMessage";
 import {
   deleteCompanyAdminProfile,
   getCompanyAdmins,
@@ -11,7 +13,6 @@ const EMPTY_FORM = {
   firstName: "",
   lastName: "",
   email: "",
-  password: "",
   companyId: "",
 };
 
@@ -21,9 +22,11 @@ export default function CompanyAdminsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [feedback, setFeedback] = useState({ type: "info", message: "" });
   const [search, setSearch] = useState("");
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
+  const [adminToDelete, setAdminToDelete] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -67,7 +70,7 @@ export default function CompanyAdminsPage() {
     e.preventDefault();
 
     if (!formData.companyId) {
-      alert("Debes seleccionar una empresa.");
+      setFeedback({ type: "error", message: "Debes seleccionar una empresa." });
       return;
     }
 
@@ -79,19 +82,19 @@ export default function CompanyAdminsPage() {
           last_name: formData.lastName.trim(),
           company_id: formData.companyId,
         });
-        alert("Administrador actualizado correctamente.");
+        setFeedback({ type: "success", message: "Administrador actualizado correctamente." });
         resetForm();
         await loadData();
       } catch (err) {
-        alert("No se pudo actualizar: " + err.message);
+        setFeedback({ type: "error", message: "No se pudo actualizar: " + err.message });
       } finally {
         setSaving(false);
       }
       return;
     }
 
-    if (!formData.email.trim() || !formData.password.trim()) {
-      alert("Correo y contraseña son obligatorios para crear el usuario.");
+    if (!formData.email.trim()) {
+      setFeedback({ type: "error", message: "Correo obligatorio para crear el usuario." });
       return;
     }
 
@@ -101,14 +104,16 @@ export default function CompanyAdminsPage() {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
-        password: formData.password,
         companyId: formData.companyId,
       });
-      alert("Administrador de empresa creado correctamente.");
+      setFeedback({
+        type: "success",
+        message: "Admin de empresa creado. Se envio correo para definir contrasena.",
+      });
       resetForm();
       await loadData();
     } catch (err) {
-      alert("No se pudo crear: " + err.message);
+      setFeedback({ type: "error", message: "No se pudo crear: " + err.message });
     } finally {
       setSaving(false);
     }
@@ -120,23 +125,27 @@ export default function CompanyAdminsPage() {
       firstName: admin.first_name || "",
       lastName: admin.last_name || "",
       email: "",
-      password: "",
       companyId: admin.company_id || "",
     });
   };
 
-  const handleDelete = async (admin) => {
-    if (!window.confirm("¿Eliminar este administrador de empresa?")) return;
+  const handleDelete = (admin) => {
+    setAdminToDelete(admin);
+  };
 
+  const confirmDelete = async () => {
+    if (!adminToDelete) return;
     try {
-      await deleteCompanyAdminProfile(admin.id);
-      alert("Administrador eliminado.");
-      if (editingId === admin.id) {
+      await deleteCompanyAdminProfile(adminToDelete.id);
+      setFeedback({ type: "success", message: "Administrador eliminado." });
+      if (editingId === adminToDelete.id) {
         resetForm();
       }
       await loadData();
     } catch (err) {
-      alert("No se pudo eliminar: " + err.message);
+      setFeedback({ type: "error", message: "No se pudo eliminar: " + err.message });
+    } finally {
+      setAdminToDelete(null);
     }
   };
 
@@ -158,6 +167,7 @@ export default function CompanyAdminsPage() {
       </div>
 
       {error && <div className="bg-red-100 text-red-700 p-3 rounded">{error}</div>}
+  <FeedbackMessage type={feedback.type} message={feedback.message} />
 
       <form onSubmit={handleSubmit} className="border rounded-lg p-4 bg-slate-50 space-y-4">
         <h2 className="text-lg font-bold text-slate-800">
@@ -193,15 +203,9 @@ export default function CompanyAdminsPage() {
               onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
               className="border rounded px-3 py-2"
             />
-            <input
-              required
-              type="password"
-              minLength={6}
-              placeholder="Contraseña inicial"
-              value={formData.password}
-              onChange={(e) => setFormData((prev) => ({ ...prev, password: e.target.value }))}
-              className="border rounded px-3 py-2"
-            />
+            <div className="border rounded px-3 py-2 bg-slate-100 text-sm text-slate-600">
+              Se enviara un correo de activacion para que el usuario cree su contrasena.
+            </div>
           </div>
         )}
 
@@ -287,6 +291,16 @@ export default function CompanyAdminsPage() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={Boolean(adminToDelete)}
+        title="Eliminar administrador"
+        message={adminToDelete ? `¿Eliminar a ${adminToDelete.first_name || ""} ${adminToDelete.last_name || ""}?` : ""}
+        confirmText="Eliminar"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setAdminToDelete(null)}
+      />
     </div>
   );
 }

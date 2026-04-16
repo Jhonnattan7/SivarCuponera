@@ -1,5 +1,13 @@
+import { useState } from "react"
+import { Link } from "react-router-dom"
+
 export default function Footer() {
   const añoActual = new Date().getFullYear()
+  const [expandedPanel, setExpandedPanel] = useState(null)
+
+  const togglePanel = (panelName) => {
+    setExpandedPanel((prev) => (prev === panelName ? null : panelName))
+  }
 
   return (
     <footer className="bg-oxford-navy text-white mt-auto">
@@ -57,36 +65,36 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="#ofertas"
+                <Link
+                  to="/"
                   className="text-slate-300 hover:text-white transition-colors text-sm"
                 >
                   Ofertas Activas
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#categorias"
+                <Link
+                  to="/#categorias"
                   className="text-slate-300 hover:text-white transition-colors text-sm"
                 >
                   Categorías
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#como-funciona"
+                <Link
+                  to="/#como-funciona"
                   className="text-slate-300 hover:text-white transition-colors text-sm"
                 >
                   ¿Cómo Funciona?
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#registro"
+                <Link
+                  to="/signup"
                   className="text-slate-300 hover:text-white transition-colors text-sm"
                 >
                   Registrarse
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -98,36 +106,36 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <a
-                  href="#empresas"
+                <Link
+                  to="/admin/companies"
                   className="text-slate-300 hover:text-white transition-colors text-sm"
                 >
                   Publicar Ofertas
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#beneficios"
+                <Link
+                  to="/#beneficios"
                   className="text-slate-300 hover:text-white transition-colors text-sm"
                 >
                   Beneficios
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#precios"
+                <Link
+                  to="/#precios"
                   className="text-slate-300 hover:text-white transition-colors text-sm"
                 >
                   Precios
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="#contacto"
+                <Link
+                  to="/#contacto"
                   className="text-slate-300 hover:text-white transition-colors text-sm"
                 >
                   Contacto
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -172,20 +180,66 @@ export default function Footer() {
               © {añoActual} SivarCuponera. Todos los derechos reservados.
             </p>
             <div className="flex space-x-6 text-sm">
-              <a
-                href="#privacidad"
+              <button
+                type="button"
+                onClick={() => togglePanel("privacy")}
                 className="text-slate-400 hover:text-white transition-colors"
               >
                 Política de Privacidad
-              </a>
-              <a
-                href="#terminos"
+              </button>
+              <button
+                type="button"
+                onClick={() => togglePanel("terms")}
                 className="text-slate-400 hover:text-white transition-colors"
               >
                 Términos y Condiciones
-              </a>
+              </button>
             </div>
           </div>
+
+          {expandedPanel && (
+            <div className="mt-6 border border-slate-700 rounded-lg bg-slate-900/40 p-4 text-sm text-slate-200">
+              {expandedPanel === "privacy" && (
+                <div>
+                  <h4 className="text-base font-semibold text-cyan-400 mb-3">Política de Privacidad</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-2">
+                      <span className="text-cyan-400">✓</span>
+                      <span>Usamos tus datos para autenticarte, gestionar compras y enviar correos del sistema.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-cyan-400">✓</span>
+                      <span>No vendemos datos personales a terceros.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-cyan-400">✓</span>
+                      <span>Puedes solicitar actualización o eliminación escribiendo a info@sivarcuponera.com.</span>
+                    </li>
+                  </ul>
+                </div>
+              )}
+
+              {expandedPanel === "terms" && (
+                <div>
+                  <h4 className="text-base font-semibold text-cyan-400 mb-3">Términos y Condiciones</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-2">
+                      <span className="text-cyan-400">✓</span>
+                      <span>Los cupones están sujetos a vigencia, disponibilidad y reglas de cada oferta.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-cyan-400">✓</span>
+                      <span>El usuario debe validar su compra antes de confirmar el pago simulado.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-cyan-400">✓</span>
+                      <span>La plataforma puede suspender cuentas por uso fraudulento o incumplimiento.</span>
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </footer>

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { comprarCupon } from '../../utils/api'
 import { supabase } from '../../services/supabaseClient'
+import { validateCardCvv, validateCardExpiry, validateCardNumber } from '../../utils/validation'
 
 const initialForm = {
   nombre: '',
@@ -56,25 +57,15 @@ export default function PagoCupon() {
     const cvv = form.cvv.trim()
     const fecha = form.fecha.trim()
 
-    if (!/^\d{16}$/.test(numero)) {
+    if (!validateCardNumber(numero)) {
       return 'El número de tarjeta debe tener exactamente 16 dígitos.'
     }
 
-    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(fecha)) {
-      return 'La fecha debe tener formato MM/AA válido.'
-    }
-
-    const [mes, anio] = fecha.split('/').map(Number)
-    const now = new Date()
-    const currentYear = now.getFullYear() % 100
-    const currentMonth = now.getMonth() + 1
-
-    const expired = anio < currentYear || (anio === currentYear && mes < currentMonth)
-    if (expired) {
+    if (!validateCardExpiry(fecha)) {
       return 'La tarjeta está expirada.'
     }
 
-    if (!/^\d{3}$/.test(cvv)) {
+    if (!validateCardCvv(cvv)) {
       return 'El CVV debe tener exactamente 3 dígitos.'
     }
 

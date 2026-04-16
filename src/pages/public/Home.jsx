@@ -9,19 +9,28 @@ export default function Home() {
 
   return (
     <>
-      <Hero busqueda={busqueda} setBusqueda={setBusqueda} />
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <section id="ofertas">
+        <Hero busqueda={busqueda} setBusqueda={setBusqueda} />
+      </section>
+
+      <section id="categorias" className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-6">
           <Sidebar
             rubroSeleccionado={rubroSeleccionado}
             onSeleccionarRubro={setRubroSeleccionado}
           />
-          <OfertasCuadricula
-            rubroSeleccionado={rubroSeleccionado}
-            busqueda={busqueda}
-          />
+          <div id="como-funciona" className="w-full">
+            <OfertasCuadricula
+              rubroSeleccionado={rubroSeleccionado}
+              busqueda={busqueda}
+            />
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section id="beneficios" className="sr-only" aria-hidden="true" />
+      <section id="precios" className="sr-only" aria-hidden="true" />
+      <section id="contacto" className="sr-only" aria-hidden="true" />
     </>
   )
 }
