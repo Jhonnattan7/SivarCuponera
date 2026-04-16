@@ -147,11 +147,15 @@ export default function OfferFormPage() {
                 if (offerStatus === "rejected") {
                     // Si estaba rechazada, la reenviamos para revisión
                     await resubmitOffer(id, payload);
-                    alert("Oferta modificada y reenviada para revisión.");
+                    navigate("/company/offers", {
+                        state: { feedback: { type: "success", message: "Oferta modificada y reenviada para revisión." } },
+                    });
                 } else {
                     // Modificación normal (ej. pendiente de aprobación)
                     await updateOffer(id, payload);
-                    alert("Oferta actualizada exitosamente.");
+                    navigate("/company/offers", {
+                        state: { feedback: { type: "success", message: "Oferta actualizada exitosamente." } },
+                    });
                 }
             } else {
                 // Crear nueva (estado pendiente por defecto en el servicio)
@@ -159,10 +163,10 @@ export default function OfferFormPage() {
                     ...payload,
                     company_id: profile.company_id,
                 });
-                alert("Oferta enviada para su revisión por parte del administrador.");
+                navigate("/company/offers", {
+                    state: { feedback: { type: "success", message: "Oferta enviada para su revisión por parte del administrador." } },
+                });
             }
-
-            navigate("/company/offers");
         } catch (err) {
             console.error(err);
             setErrorMsg("Error al guardar la oferta: " + err.message);

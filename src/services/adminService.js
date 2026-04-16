@@ -71,6 +71,7 @@ export const updateCompanyAdminProfile = async (id, updates) => {
 };
 
 export const deleteCompanyAdminProfile = async (id) => {
+  // This only removes the profile row. Full auth user deletion requires Admin API/Edge Function.
   const { error } = await supabase
     .from('profiles')
     .delete()

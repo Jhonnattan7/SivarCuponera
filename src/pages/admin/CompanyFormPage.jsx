@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCategories } from "../../services/categoriesService";
 import { createCompany, getCompanyById, updateCompany } from "../../services/companiesService";
+import FeedbackMessage from "../../components/common/FeedbackMessage";
 
 const E164_PHONE_REGEX = /^\+[1-9]\d{7,14}$/;
 
@@ -21,6 +22,7 @@ export default function CompanyFormPage() {
   
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [feedback, setFeedback] = useState({ type: "info", message: "" });
   
   const [formData, setFormData] = useState({
     name: "",
@@ -46,7 +48,7 @@ export default function CompanyFormPage() {
       const data = await getCategories();
       setCategories(data);
     } catch (error) {
-      alert("Error cargando rubros");
+      setFeedback({ type: "error", message: "Error cargando rubros" });
     }
   };
 
@@ -64,7 +66,7 @@ export default function CompanyFormPage() {
         commission_pct: data.commission_pct
       });
     } catch (error) {
-      alert("Error cargando datos de la empresa");
+      setFeedback({ type: "error", message: "Error cargando datos de la empresa" });
       navigate("/admin/companies");
     }
   };
@@ -96,15 +98,18 @@ export default function CompanyFormPage() {
 
       if (id) {
         await updateCompany(id, payload);
-        alert("Empresa actualizada correctamente");
+        navigate("/admin/companies", {
+          state: { feedback: { type: "success", message: "Empresa actualizada correctamente" } },
+        });
       } else {
         await createCompany(payload);
-        alert("Empresa creada correctamente");
+        navigate("/admin/companies", {
+          state: { feedback: { type: "success", message: "Empresa creada correctamente" } },
+        });
       }
-      navigate("/admin/companies");
       
     } catch (error) {
-      alert("Error: " + error.message);
+      setFeedback({ type: "error", message: "Error: " + error.message });
     } finally {
       setLoading(false);
     }
@@ -120,6 +125,8 @@ export default function CompanyFormPage() {
       <h1 className="text-2xl font-bold mb-6">
         {id ? "Editar Empresa" : "Registrar Nueva Empresa"}
       </h1>
+
+      <FeedbackMessage type={feedback.type} message={feedback.message} />
 
       <form onSubmit={handleSubmit} className="space-y-6">
         

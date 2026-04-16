@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getCompanies } from "../../services/companiesService";
-import { createCompanyAdmin } from "../../services/authService";
+import { createCompanyAdmin } from "../../services/internalUsersService";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import FeedbackMessage from "../../components/common/FeedbackMessage";
 import {

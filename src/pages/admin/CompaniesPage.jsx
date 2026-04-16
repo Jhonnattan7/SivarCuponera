@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { getCompanies, deleteCompany } from "../../services/companiesService";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import FeedbackMessage from "../../components/common/FeedbackMessage";
@@ -9,10 +9,18 @@ export default function CompaniesPage() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState({ type: "info", message: "" });
   const [companyToDelete, setCompanyToDelete] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     loadCompanies();
   }, []);
+
+  useEffect(() => {
+    const incomingFeedback = location.state?.feedback;
+    if (incomingFeedback?.message) {
+      setFeedback(incomingFeedback);
+    }
+  }, [location.state]);
 
   const loadCompanies = async () => {
     try {

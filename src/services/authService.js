@@ -1,13 +1,9 @@
 // src/services/authService.js
-import { createClient } from "@supabase/supabase-js";
 import { supabase } from "./supabaseClient";
-
-function generateTemporaryPassword(length = 18) {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*";
-  const array = new Uint32Array(length);
-  crypto.getRandomValues(array);
-  return Array.from(array, (n) => chars[n % chars.length]).join("");
-}
+import {
+  createCompanyAdmin as createCompanyAdminInternal,
+  createEmployee as createEmployeeInternal,
+} from "./internalUsersService";
 
 export async function login(email, password) {
   const normalizedEmail = email.trim().toLowerCase();
@@ -70,83 +66,9 @@ export async function updatePassword(newPassword) {
 }
 
 export async function createEmployee({ firstName, lastName, email, companyId }) {
-  const normalizedEmail = email.trim().toLowerCase();
-  const temporaryPassword = generateTemporaryPassword();
-
-  // Creamos una instancia temporal para que el signUp no modifique la sesión actual (del admin)
-  const tempSupabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY,
-    { auth: { persistSession: false, autoRefreshToken: false } }
-  );
-
-  const { data, error } = await tempSupabase.auth.signUp({
-    email: normalizedEmail,
-    password: temporaryPassword,
-  });
-  if (error) throw error;
-  if (!data.user) throw new Error("No se pudo crear el usuario en Auth.");
-
-  // Usamos la instancia principal (que aún tiene la sesión de company_admin activa)
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .insert({
-      id:         data.user.id,
-      role:       "company_employee",
-      company_id: companyId,
-      first_name: firstName,
-      last_name:  lastName,
-    });
-
-  if (profileError) throw profileError;
-
-  const { error: resetError } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-    redirectTo: `${window.location.origin}/reset-password`,
-  });
-
-  if (resetError) {
-    throw new Error(`Usuario creado, pero no se pudo enviar correo de activacion: ${resetError.message}`);
-  }
-
-  return data;
+  return createEmployeeInternal({ firstName, lastName, email, companyId });
 }
 
 export async function createCompanyAdmin({ firstName, lastName, email, companyId }) {
-  const normalizedEmail = email.trim().toLowerCase();
-  const temporaryPassword = generateTemporaryPassword();
-
-  const tempSupabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY,
-    { auth: { persistSession: false, autoRefreshToken: false } }
-  );
-
-  const { data, error } = await tempSupabase.auth.signUp({
-    email: normalizedEmail,
-    password: temporaryPassword,
-  });
-  if (error) throw error;
-  if (!data.user) throw new Error("No se pudo crear el usuario en Auth.");
-
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .insert({
-      id:         data.user.id,
-      role:       "company_admin",
-      company_id: companyId,
-      first_name: firstName,
-      last_name:  lastName,
-    });
-
-  if (profileError) throw profileError;
-
-  const { error: resetError } = await supabase.auth.resetPasswordForEmail(normalizedEmail, {
-    redirectTo: `${window.location.origin}/reset-password`,
-  });
-
-  if (resetError) {
-    throw new Error(`Usuario creado, pero no se pudo enviar correo de activacion: ${resetError.message}`);
-  }
-
-  return data;
+  return createCompanyAdminInternal({ firstName, lastName, email, companyId });
 }

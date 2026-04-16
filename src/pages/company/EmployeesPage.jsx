@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getEmployeesByCompany, deleteEmployeeProfile } from "../../services/employeesService";
-import { createEmployee } from "../../services/authService";
+import { createEmployee } from "../../services/internalUsersService";
 import { useAuth } from "../../context/AuthContext";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
 import FeedbackMessage from "../../components/common/FeedbackMessage";

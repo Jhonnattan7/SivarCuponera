@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getOffersByCompany, discardOffer } from "../../services/offersService";
 import ConfirmDialog from "../../components/common/ConfirmDialog";
@@ -13,6 +13,7 @@ import {
 export default function OffersPage() {
     const { profile } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("all");
@@ -24,6 +25,13 @@ export default function OffersPage() {
             loadOffers();
         }
     }, [profile]);
+
+    useEffect(() => {
+        const incomingFeedback = location.state?.feedback;
+        if (incomingFeedback?.message) {
+            setFeedback(incomingFeedback);
+        }
+    }, [location.state]);
 
     const loadOffers = async () => {
         try {
