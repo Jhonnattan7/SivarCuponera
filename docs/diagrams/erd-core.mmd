@@ -1,0 +1,38 @@
+erDiagram
+  categories ||--o{ companies : category_id
+  companies ||--o{ profiles : company_id
+  companies ||--o{ offers : company_id
+  offers ||--o{ coupons : offer_id
+  profiles ||--o{ coupons : client_id
+  profiles ||--o{ coupons : redeemed_by
+
+  categories {
+    uuid id PK
+    text name
+  }
+
+  companies {
+    uuid id PK
+    text name
+    char6 code
+    uuid category_id FK
+  }
+
+  profiles {
+    uuid id PK
+    user_role role
+    uuid company_id FK
+  }
+
+  offers {
+    uuid id PK
+    uuid company_id FK
+    offer_status status
+  }
+
+  coupons {
+    uuid id PK
+    uuid offer_id FK
+    uuid client_id FK
+    coupon_status status
+  }

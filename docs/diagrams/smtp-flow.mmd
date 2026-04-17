@@ -1,0 +1,13 @@
+sequenceDiagram
+  participant U as Usuario
+  participant FE as Frontend
+  participant SA as Supabase Auth
+  participant SMTP as Gmail SMTP
+
+  U->>FE: Solicita recuperar contrasena
+  FE->>SA: resetPasswordForEmail(email)
+  SA->>SMTP: Enviar plantilla personalizada
+  SMTP-->>U: Correo con enlace de reset
+  U->>FE: Abre enlace /reset-password
+  FE->>SA: updateUser(newPassword)
+  SA-->>U: Contrasena actualizada

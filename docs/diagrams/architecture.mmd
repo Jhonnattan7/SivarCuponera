@@ -1,0 +1,13 @@
+flowchart LR
+  UI[React App]
+  AUTH[Supabase Auth]
+  EF[Edge Functions]
+  DB[(PostgreSQL)]
+  ST[Storage Bucket offers-images]
+
+  UI --> AUTH
+  UI --> DB
+  UI --> ST
+  UI --> EF
+  EF --> AUTH
+  EF --> DB

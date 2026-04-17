@@ -97,6 +97,12 @@ database/
 └── migrations/
 ```
 
+## Documentacion tecnica
+
+La documentacion tecnica extendida del proyecto se encuentra en [docs/technical-documentation.md](docs/technical-documentation.md).
+
+Incluye arquitectura, esquema de base de datos, flujo de autenticacion, seguridad RLS, Edge Functions y diagramas.
+
 ## Base de datos
 
 El proyecto usa Supabase como backend y organiza la lógica SQL en migraciones:
