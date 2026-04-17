@@ -97,11 +97,20 @@ database/
 └── migrations/
 ```
 
-## Documentacion tecnica
+## Referencias de Documentacion
 
-La documentacion tecnica extendida del proyecto se encuentra en [docs/technical-documentation.md](docs/technical-documentation.md).
+La documentacion tecnica extendida del proyecto esta organizada en [docs/technical-documentation.md](docs/technical-documentation.md).
 
-Incluye arquitectura, esquema de base de datos, flujo de autenticacion, seguridad RLS, Edge Functions y diagramas.
+Documentos principales:
+
+- [Arquitectura](docs/architecture.md)
+- [Esquema de Base de Datos](docs/database-schema.md)
+- [Migraciones y Ejecucion](docs/migrations.md)
+- [Flujo de Autenticacion y SMTP](docs/auth-flow.md)
+- [Seguridad y RLS](docs/security-rls.md)
+- [Edge Functions](docs/api-edge-functions.md)
+- [Flujos por Rol](docs/user-flows.md)
+- [Guia de Diagramas](docs/diagrams/diagramas-guia.md)
 
 ## Base de datos
 
@@ -204,11 +213,13 @@ Si no ves ofertas o el login falla, revisa lo siguiente:
 
 ## Equipo de Desarrollo
 
-1. Alexander Martinez - Autenticación y Configuracon de Subapase
-2. Napoleon Días - Frontend / Modulo Compra Cupon
-3. Marco Mazzini - Frontend / Modulo Admin Empresa
-4. Jhonnatan Peñate - Frontend / Modulo Administador Total y Documentación
-5. Jade Cárcamo - Frontend / Modulo de Cliente Mis Cupones y Canje Empleado
+1. Alexander Martinez: configuración inicial de autenticación/login y estructura base en Supabase.
+2. Napoleon Días: módulo de compra de cupones, validación de flujo de compra tipo real, integración de correo y apoyo en RLS/Edge Functions.
+3. Marco Mazzini: módulo de administración de empresa consumiendo Backend as a Service con Supabase.
+4. Jhonnatan Peñate: módulo de administración global, documentación técnica e integración de Supabase (RLS, Storage, SMTP y Edge Functions).
+5. Jade Cárcamo: módulo de cliente (mis cupones) y canje de empleado, consumiendo servicios de Supabase desde frontend.
+
+Nota: todo el equipo trabajó sobre un enfoque Backend as a Service con Supabase, integrando frontend por módulos y reglas de seguridad compartidas.
 
 ## Licencia
 
